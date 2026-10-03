@@ -18,7 +18,17 @@ export default function Bubble() {
       className={s.anchor}
       aria-hidden={!open}
     >
-      <div className={`${s.bubble} ${open ? s.bubbleOpen : ''}`} role="status" aria-live="polite">
+      <div
+        ref={(el) => {
+          if (!el) return
+          const measure = () => (bubbleAnchor.width = el.offsetWidth)
+          measure()
+          new ResizeObserver(measure).observe(el)
+        }}
+        className={`${s.bubble} ${open ? s.bubbleOpen : ''}`}
+        role="status"
+        aria-live="polite"
+      >
         <div className={s.card}>
           <div className={s.bubbleHead}>
             <svg className={s.badge} viewBox="0 0 30 22" aria-hidden="true">

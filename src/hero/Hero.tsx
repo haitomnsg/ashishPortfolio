@@ -1,17 +1,16 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Scene from './Scene'
 import Bubble from './Bubble'
 import { pointer, useHero } from './store'
 import s from './Hero.module.css'
 
 /**
- * The Arrival screen (DESIGN section 8): the 3D coast underneath, and the only chrome
- * allowed on top: wordmark, the controls pill, Alu's bubble (in the scene), and the
- * "SCROLL TO FOLLOW" label. The sun glare is DOM so it stays crisp and cheap.
+ * The Arrival screen (DESIGN section 8): the 3D coast underneath (matched to the key art
+ * inspo/Section_One.png, sun glare included), and the only chrome allowed on top:
+ * wordmark, the controls pill, Alu's bubble (in the scene), and "SCROLL TO FOLLOW".
  */
 export default function Hero() {
   const ready = useHero((st) => st.ready)
-  const glare = useRef<HTMLDivElement>(null)
   const [night, setNight] = useState(false)
   const [sound, setSound] = useState(false)
 
@@ -21,9 +20,6 @@ export default function Hero() {
       pointer.y = -((e.clientY / window.innerHeight) * 2 - 1)
       pointer.active = true
       pointer.idle = 0
-      if (glare.current) {
-        glare.current.style.transform = `translate3d(${pointer.x * -18}px, ${pointer.y * 14}px, 0)`
-      }
     }
     const onLeave = () => {
       pointer.x = 0
@@ -46,7 +42,6 @@ export default function Hero() {
       <div className={s.canvas}>
         <Scene />
       </div>
-      <div ref={glare} className={s.glare} aria-hidden="true" />
       <Bubble />
 
       <header className={s.chrome}>

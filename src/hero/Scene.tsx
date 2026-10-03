@@ -1,6 +1,6 @@
-import { Suspense, useEffect, useMemo } from 'react'
+import { Suspense, useEffect } from 'react'
 import * as THREE from 'three'
-import { Canvas, useThree } from '@react-three/fiber'
+import { Canvas } from '@react-three/fiber'
 import { useProgress } from '@react-three/drei'
 import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import Sky from './Sky'
@@ -9,6 +9,7 @@ import Alu from './Alu'
 import CameraRig from './CameraRig'
 import Motes from './Motes'
 import { useHero } from './store'
+import { CAM_POS } from './heroCam'
 
 function Ready() {
   const { active, progress } = useProgress()
@@ -22,29 +23,17 @@ function Ready() {
   return null
 }
 
-function Atmosphere() {
-  const scene = useThree((s) => s.scene)
-  const fog = useMemo(() => new THREE.Fog('#cfeaf7', 110, 560), [])
-  useEffect(() => {
-    scene.fog = fog
-    return () => {
-      scene.fog = null
-    }
-  }, [scene, fog])
-  return null
-}
-
 /**
- * Reference lighting from DESIGN section 3: warm sun from the upper left and front, a
- * blue-violet sky fill so shadows never go black. No tone mapping: colours stay flat and
- * saturated like the Blender "Standard" renders.
+ * The near and far world are painted (projected from the key art), so lights only touch
+ * what is truly 3D: Alu and the grass tufts. They copy the key art's light on Alu: a warm
+ * key from the upper left and front, a blue sky fill so shade never goes grey, and the
+ * gate's warm glow on his right side. No tone mapping: colours stay as painted.
  */
 export default function Scene() {
   return (
     <Canvas
-      shadows
-      dpr={[1, 1.5]}
-      camera={{ fov: 38.9, near: 0.1, far: 1500, position: [0.3, 2.0, 12.2] }}
+      dpr={[1, 1.25]} // the key art is 1536 px wide: more pixels only cost
+      camera={{ fov: 38.9, near: 0.05, far: 1500, position: CAM_POS.toArray() }}
       gl={{
         antialias: true,
         toneMapping: THREE.NoToneMapping,
@@ -52,27 +41,12 @@ export default function Scene() {
         powerPreference: 'high-performance',
       }}
       onCreated={(state) => {
-        state.gl.shadowMap.type = THREE.PCFSoftShadowMap
         if (import.meta.env.DEV) (window as unknown as { __r3f: unknown }).__r3f = state
       }}
     >
-      <Atmosphere />
-      <directionalLight
-        color="#ffe3bc"
-        intensity={2.8}
-        position={[-5, 6.2, 3.2]}
-        castShadow
-        shadow-mapSize={[1536, 1536]}
-        shadow-bias={-0.0004}
-        shadow-normalBias={0.02}
-        shadow-camera-near={1}
-        shadow-camera-far={40}
-        shadow-camera-left={-11}
-        shadow-camera-right={11}
-        shadow-camera-top={9}
-        shadow-camera-bottom={-9}
-      />
-      <hemisphereLight color="#9db4ea" groundColor="#dcc8a6" intensity={0.75} />
+      <directionalLight color="#ffe6c4" intensity={2.45} position={[-3.5, 5, 6]} />
+      <hemisphereLight color="#b4d4f4" groundColor="#ead2ae" intensity={1.0} />
+      <pointLight color="#ffe0ae" intensity={2.2} distance={3.2} decay={1.6} position={[-0.25, 1.1, 0.35]} />
       <Suspense fallback={null}>
         <Sky />
         <World />
@@ -82,7 +56,7 @@ export default function Scene() {
       </Suspense>
       <CameraRig />
       <EffectComposer multisampling={2}>
-        <Bloom luminanceThreshold={1.15} mipmapBlur intensity={0.5} radius={0.5} />
+        <Bloom luminanceThreshold={1.1} mipmapBlur intensity={0.45} radius={0.55} />
       </EffectComposer>
     </Canvas>
   )

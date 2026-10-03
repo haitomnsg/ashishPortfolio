@@ -1,38 +1,36 @@
 import { useEffect, useMemo } from 'react'
 import * as THREE from 'three'
-import { useThree } from '@react-three/fiber'
-import { skyMaterial } from './shaders'
-import { env } from './store'
+import { useFrame, useThree } from '@react-three/fiber'
+import { useTexture } from '@react-three/drei'
+import { backdropMaterial } from './shaders'
+import { BACKDROP } from './heroCam'
 
 /**
- * The gradient dome the camera sees. The same gradient is rendered once into a small
- * cube map that only the gate's glass reflects (never a scene-wide environment light,
- * which would wash out the flat colours and fill the shadows).
+ * The far world: the matte painting made from the key art by docs/world/backdrop_build.py
+ * (sky, the big cloud, the headland and its crane, the sea), on a dome at infinity. It is
+ * mapped by view direction exactly as the rest camera saw it, so when the camera moves
+ * it behaves like a distant view and the near world slides across it.
  */
 export default function Sky() {
+  const map = useTexture(BACKDROP.url)
   const gl = useThree((s) => s.gl)
-  const mat = useMemo(() => skyMaterial(), [])
+  const mat = useMemo(() => backdropMaterial(map), [map])
 
   useEffect(() => {
-    const scene = new THREE.Scene()
-    const dome = new THREE.Mesh(new THREE.SphereGeometry(50, 24, 12), skyMaterial())
-    scene.add(dome)
-    const rt = new THREE.WebGLCubeRenderTarget(128, { type: THREE.HalfFloatType })
-    const cam = new THREE.CubeCamera(0.1, 100, rt)
-    cam.update(gl, scene)
-    env.map = rt.texture
-    env.version++
-    return () => {
-      rt.dispose()
-      dome.geometry.dispose()
-      ;(dome.material as THREE.Material).dispose()
-      env.map = null
-    }
-  }, [gl])
+    map.colorSpace = THREE.SRGBColorSpace
+    map.anisotropy = Math.min(8, gl.capabilities.getMaxAnisotropy())
+    map.needsUpdate = true
+  }, [map, gl])
+
+  useFrame((state) => {
+    mat.uniforms.uTime.value = state.clock.elapsedTime
+  })
 
   return (
     <mesh material={mat} renderOrder={-10} frustumCulled={false}>
-      <sphereGeometry args={[800, 32, 16]} />
+      <sphereGeometry args={[800, 48, 24]} />
     </mesh>
   )
 }
+
+useTexture.preload(BACKDROP.url)

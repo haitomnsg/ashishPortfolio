@@ -6,6 +6,10 @@ import { bubbleAnchor, pointer, useHero } from './store'
 
 const ALU_URL = '/models/alu.glb'
 const D = THREE.MathUtils.degToRad
+/** Where the key art has him: on the terrace left of the gate (docs/world/hero_build.py ALU). */
+const HOME = new THREE.Vector3(-0.915, 0.181, 0.726)
+const HOME_YAW = D(20)
+const SIZE = 1.07 // the painted Alu is a little bigger than the model
 
 /**
  * Alu, driven procedurally on the rest-pose GLB (DESIGN section 6 rig contract).
@@ -26,6 +30,10 @@ export default function Alu() {
 
   const rig = useMemo(() => {
     const get = (n: string) => scene.getObjectByName(n) ?? null
+    // remember rest transforms once (the GLTF scene is cached across remounts)
+    scene.traverse((o) => {
+      if (/^Eye_/.test(o.name) && !o.userData.rest) o.userData.rest = { scale: o.scale.clone(), y: o.position.y }
+    })
     return {
       body: get('body'),
       neck: get('neck'),
@@ -55,13 +63,16 @@ export default function Alu() {
         m.flatShading = true
         m.needsUpdate = true
       }
+      if (m.name === 'Alu_Screen') m.color.set('#232846') // the painted face reads navy, not black
       if (m.name === 'Alu_Glow') {
         if (o.name === 'Mast_Beacon') {
           const b = m.clone()
           b.emissiveIntensity = 2.2
           o.material = b
         } else {
-          m.emissiveIntensity = 2.6
+          // cyan with a soft bloom, not white: the diffuse stays low so light cannot wash it out
+          m.color.set('#5fc4e2')
+          m.emissiveIntensity = 0.85
           m.toneMapped = false
           if (!glowMats.current.includes(m)) glowMats.current.push(m)
         }
@@ -77,7 +88,7 @@ export default function Alu() {
     bodyYaw: 0,
     wave: 0, // 0..1 blend toward the raised arm
     waveUntil: 0,
-    nextWave: 2.4,
+    nextWave: 0.9, // he is mid-wave in the key art: start with one
     blinkAt: 2.6,
     blink: 0,
     hop: 0,
@@ -132,7 +143,8 @@ export default function Alu() {
     if (idle < 4) s.glance = 0
     const px = reduced ? 0 : pointer.sx
     const py = reduced ? 0 : pointer.sy
-    const targetYaw = THREE.MathUtils.lerp(0.35, -D(28) + px * 0.55 + s.glance, turnIn)
+    // the head faces the visitor, turned a little toward the gate as painted
+    const targetYaw = THREE.MathUtils.lerp(0.35, -D(8) + px * 0.55 + s.glance, turnIn)
     const targetPitch = THREE.MathUtils.lerp(0.05, -py * 0.28 + 0.04, turnIn)
     s.headYaw += (targetYaw - s.headYaw) * k(7)
     s.headPitch += (targetPitch - s.headPitch) * k(7)
@@ -149,7 +161,7 @@ export default function Alu() {
 
     // ---- wave: loops every few seconds, held while hovered -----------------------------
     if (!reduced && t > s.nextWave && s.waveUntil < t) {
-      s.waveUntil = t + 2.3
+      s.waveUntil = t + (s.nextWave < 1 ? 3.4 : 2.3)
       s.nextWave = t + 7 + Math.random() * 4
     }
     const waving = t < s.waveUntil
@@ -170,7 +182,7 @@ export default function Alu() {
       const m = beacon.material as THREE.MeshStandardMaterial
       m.emissiveIntensity = 1.4 + (Math.sin(t * 2.2) * 0.5 + 0.5) * 1.6
     }
-    const hot = s.hover ? 3.4 : 2.6
+    const hot = s.hover ? 1.15 : 0.85
     glowMats.current.forEach((m) => (m.emissiveIntensity += (hot - m.emissiveIntensity) * k(6)))
 
     // ---- blink ---------------------------------------------------------------------------
@@ -181,12 +193,9 @@ export default function Alu() {
     if (s.blink > 0) {
       s.blink = Math.max(0, s.blink - dt * 9)
       const open = s.blink > 0.5 ? 1 - (1 - s.blink) * 2 : s.blink * 2
-      const sy = Math.max(0.08, 1 - (1 - open))
-      eyes.forEach((e) => e.scale.setY(sy))
-      scans.forEach((e) => e.scale.setY(sy))
+      lid(eyes, scans, Math.max(0.08, open))
     } else {
-      eyes.forEach((e) => e.scale.setY(1))
-      scans.forEach((e) => e.scale.setY(1))
+      lid(eyes, scans, 1)
     }
 
     // ---- hop on click ------------------------------------------------------------------
@@ -196,27 +205,53 @@ export default function Alu() {
       if (s.hop === 0) s.hopV = 0
     }
     if (root.current) {
-      root.current.position.y = 0.5 + s.hop
+      root.current.position.y = HOME.y + s.hop
       const squash = s.hop > 0 ? 1 + s.hop * 0.15 : 1
-      root.current.scale.set(1 / Math.sqrt(squash), squash, 1 / Math.sqrt(squash))
+      root.current.scale.set(SIZE / Math.sqrt(squash), SIZE * squash, SIZE / Math.sqrt(squash))
     }
     const crouch = Math.min(0.25, s.hop * 0.4)
     ;[legR, legL].forEach((leg) => leg[1] && (leg[1].rotation.x = crouch))
 
     // ---- speech bubble anchor: project the top of the head to screen space --------------
     if (bubbleAnchor.el && root.current) {
-      anchor.set(0.1, 1.42, 0).applyMatrix4(root.current.matrixWorld).project(state.camera)
+      // just left of the mast top, where the key art's bubble tail points
+      anchor.set(-0.28, 1.22, -0.1).applyMatrix4(root.current.matrixWorld).project(state.camera)
       const w = state.size.width
       const h = state.size.height
-      bubbleAnchor.el.style.transform = `translate3d(${((anchor.x + 1) / 2) * w}px, ${((1 - anchor.y) / 2) * h}px, 0)`
+      const x = ((anchor.x + 1) / 2) * w
+      bubbleAnchor.el.style.transform = `translate3d(${x}px, ${((1 - anchor.y) / 2) * h}px, 0)`
+      // the card sits up and to the left of the tail; on narrow screens slide it back on
+      // screen and move the tail the other way so it still points at Alu
+      const shift = Math.max(0, 12 - (x - (bubbleAnchor.width - 64)))
+      bubbleAnchor.el.style.setProperty('--shift', `${shift.toFixed(1)}px`)
     }
   })
 
   return (
-    <group ref={root} position={[-1.5, 0.5, 0.35]} rotation={[0, D(28), 0]}>
+    <group ref={root} position={HOME} rotation={[0, HOME_YAW, 0]} scale={SIZE}>
       <primitive object={scene} onPointerOver={onOver} onPointerOut={onOut} onClick={onClick} />
     </group>
   )
+}
+
+/**
+ * Opens the eyes to `k` (1 = open). Each eye is a flat disc turned to face forward, so its
+ * height is its local Z; the scanlines close in toward the eye's centre.
+ */
+function lid(eyes: THREE.Object3D[], scans: THREE.Object3D[], k: number) {
+  eyes.forEach((e) => {
+    const r = e.userData.rest
+    if (r) e.scale.set(r.scale.x, r.scale.y, r.scale.z * k)
+  })
+  scans.forEach((sc) => {
+    const r = sc.userData.rest
+    const eye = sc.name.startsWith('Eye_L') ? eyes[0] : eyes[1]
+    const cy = eye?.userData.rest?.y ?? r?.y ?? 0
+    if (r) {
+      sc.scale.y = r.scale.y * k
+      sc.position.y = cy + (r.y - cy) * k
+    }
+  })
 }
 
 useGLTF.preload(ALU_URL)

@@ -89,6 +89,14 @@ Chrome per `docs/design/ui-v2.html`: wordmark, controls pill, Alu's bubble (DOM,
 head), "SCROLL TO FOLLOW". Still to do here: the Threshold (scroll → walk through the gate), the
 skip/reduced-motion crossfade, quality tiers, the night version of the scene, and the mobile camera
 path (the FOV is clamped so the gate stays in frame, nothing more yet).
+
+**Update 2026-10-03 (later):** the Arrival now matches the key art `inspo/Section_One.png`. The
+camera is the key art's camera; the far world is a matte painting cut from the key art and the
+near world is proxy geometry painted by projecting it (see `docs/world/README.md`), so at rest
+the screen is the key art (mean difference about 4/255) while parallax, Alu, the gate glass and
+light, the swaying grass and pines stay live. Phones frame Alu and the gate; the speech bubble
+stays on screen. Shadows and fog are gone (painted in). The night scene now needs its own key
+art or a relight of the plate.
 - Scene root, quality tiers, lighting (warm sun + blue-violet sky fill + rim), faceted ground with
   contact shadows, haze.
 - Gate glass (reflective; transmission on high tier), light shaft (cheap: layered additive planes),

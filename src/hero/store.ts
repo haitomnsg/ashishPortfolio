@@ -13,18 +13,15 @@ export const pointer = {
   sy: 0,
   /** where the pointer ray hits the ground plane (world space, three.js Y-up) */
   gx: 0,
-  gz: 6,
+  gz: 4,
   /** true once the pointer has moved at least once */
   active: false,
   /** seconds since the pointer last moved */
   idle: 0,
 }
 
-/** The sky cube map for reflective materials (written by Sky.tsx, read by World.tsx). */
-export const env: { map: import('three').Texture | null; version: number } = { map: null, version: 0 }
-
 /** The DOM element the scene positions over Alu's head (see Bubble.tsx and Alu.tsx). */
-export const bubbleAnchor: { el: HTMLDivElement | null } = { el: null }
+export const bubbleAnchor: { el: HTMLDivElement | null; width: number } = { el: null, width: 0 }
 
 type HeroState = {
   ready: boolean

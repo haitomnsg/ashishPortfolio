@@ -3,7 +3,7 @@
   width: 100%;
   height: 100dvh;
   overflow: hidden;
-  background: #cfeaf7;
+  background: #7cc0ee;
 }
 
 .canvas {
@@ -14,26 +14,6 @@
 .canvas canvas {
   display: block;
   touch-action: none;
-}
-
-/* Sun glare, top-left, moves against the pointer */
-.glare {
-  position: absolute;
-  left: -18vmax;
-  top: -22vmax;
-  width: 48vmax;
-  height: 48vmax;
-  pointer-events: none;
-  background: radial-gradient(
-    closest-side,
-    rgba(255, 250, 235, 0.9) 0%,
-    rgba(255, 245, 220, 0.4) 16%,
-    rgba(255, 240, 210, 0.12) 38%,
-    rgba(255, 240, 210, 0) 68%
-  );
-  mix-blend-mode: screen;
-  will-change: transform;
-  transition: transform 0.6s var(--ease-ui);
 }
 
 /* ---------------------------------------------------------------- chrome */
@@ -174,7 +154,8 @@
   left: 0;
   top: 0;
   width: max-content;
-  transform: translate(calc(-100% + 62px), calc(-100% - 26px)) translateY(10px);
+  /* the tail's tip sits on the anchor (see .tail) */
+  transform: translate(calc(-100% + 64px + var(--shift, 0px)), calc(-100% - 26px)) translateY(10px);
   filter: drop-shadow(0 14px 22px var(--shadow-ink));
   opacity: 0;
   transition:
@@ -185,7 +166,7 @@
 
 .bubbleOpen {
   opacity: 1;
-  transform: translate(calc(-100% + 62px), calc(-100% - 26px)) translateY(0);
+  transform: translate(calc(-100% + 64px + var(--shift, 0px)), calc(-100% - 26px)) translateY(0);
 }
 
 .card {
@@ -229,7 +210,7 @@
 .tail {
   position: absolute;
   top: calc(100% - 1px);
-  right: 28px;
+  right: calc(64px + var(--shift, 0px));
   width: 34px;
   height: 24px;
   display: block;
