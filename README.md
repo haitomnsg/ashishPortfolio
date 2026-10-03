@@ -2,6 +2,8 @@
 
 > **Purpose:** This README is the source of truth for building my personal portfolio website. It captures the vision, storytelling, visual direction, robot mascot, interaction philosophy, and content structure I have described. It is **not a project-management plan or task list**. Use it as the design/build context while making implementation decisions.
 
+> **Direction update (2026-10-03):** The look moved from a clean, white, Apple-like exhibition to a **stylized, sunlit sci-fi coast** inspired by the art direction of the game *Caravan SandWitch*. The world is built from a few simple, faceted shapes with flat matte colours. The robot was redesigned to match (Alu v2). The story, structure and principles are unchanged. The sections that changed are 1, 2, 3, 4, 9, 15–18, 20, 23, 27, 31–33, 38 and 39. `docs/DESIGN.md` holds the concrete specs.
+
 ---
 
 ## 1. Core Vision
@@ -28,7 +30,8 @@ The overall feeling should be:
 - Curious
 - Technically sophisticated
 - Award-style / showcase-quality
-- Clean enough to feel Apple-like rather than visually noisy
+- Warm and natural, like a real place, not a sterile void
+- Calm and uncluttered: a few simple shapes rather than visual noise
 
 The site should feel like a **digital experience**, not a collection of cards.
 
@@ -40,11 +43,11 @@ The visitor should feel as if they are entering my world.
 
 The opening concept is approximately:
 
-1. Start with a mostly white / very clean screen.
-2. The robot mascot appears.
-3. A mysterious architectural entrance / portal / door / glass gateway appears.
-4. Light comes from or through the entrance.
-5. The robot approaches it.
+1. Open on a calm, sunlit coast: a white limestone plateau, a strip of sea, a huge sky. Almost no UI.
+2. A tall glass gateway stands in the center of the scene.
+3. The robot mascot stands right beside it and turns to look at the visitor.
+4. Light comes through the gateway.
+5. The robot says one short line (see §9) and invites the visitor to follow.
 6. The robot walks through the entrance.
 7. The world behind/through the entrance becomes the portfolio environment.
 8. The visitor is then taken through my story, projects, engineering work, and experiences.
@@ -62,6 +65,7 @@ The portal can be:
 - Brightly illuminated
 - Slightly mysterious
 - Integrated naturally into the environment
+- Standing on its own in a natural landscape, like a glass pane on a cliff top
 
 The opening should be visually understandable even without text.
 
@@ -97,23 +101,38 @@ The robot should feel:
 
 It should work as a real 3D model that can later be animated.
 
+It should be modelled in the same stylized style as the world: simple faceted shapes, flat matte colours, no glossy plastic.
+
 ## Color direction
 
 The primary visual identity of the robot is:
 
-- White
-- Power/light blue
-- Very subtle cool gray/silver mechanical details
-- Small dark elements for contrast
-- Soft blue emissive details where appropriate
+- Warm cream-white shell (sun-faded, not pure white)
+- Power/sky blue limbs and details
+- Dark navy-plum joints, soles and face screen for contrast
+- Small orange details: screws, straps, wheel hubs, the flag
+- Soft cyan glow on everything that is "on": eyes, status lights, antenna tip, beacon
+- Painted grey metal for small mechanical parts
 
-The robot should primarily read as a **white + power-blue robot**.
+The robot should primarily read as a **cream-white + power-blue robot**, with orange only as a small accent.
 
 The blue should feel clean and futuristic rather than neon/cyberpunk.
 
 Avoid making the robot entirely blue.
 
 White should remain a major part of the body.
+
+## Current design (Alu v2, 2026-10-03)
+
+The robot's working name is **Alu**. The current model is a stylized low-poly explorer robot built to match the world:
+
+- A big boxy head with a dark screen face: two large glowing eyes with scanlines and a small smile
+- Blue ear disks, an antenna with a glowing tip, a carry handle, and a small swallowtail flag on a short mast with a beacon
+- A bolted chest plate with status lights, a docked power pack on the back, and cables to the shoulders
+- Rubber bellows at the neck and waist, servo caps at the joints, pistons on the legs
+- Chunky blue forearms and shins, cream boots with orange straps, and small heel wheels
+
+Files: `docs/robot/alu_v2_build.py` (rebuild script), `docs/robot/alu_v2.blend`, `public/models/alu.glb` (web model), and renders in `docs/robot/renders/`.
 
 ## Important physical characteristics
 
@@ -138,6 +157,8 @@ The character should be recognizable even as a small object on screen.
 ## Character personality
 
 The robot should communicate personality through animation rather than dialogue-heavy exposition.
+
+It may speak, but only in very short lines shown in a speech bubble, one line at a time and at most one per chapter. It never holds a conversation.
 
 Useful behaviors include:
 
@@ -164,46 +185,49 @@ Avoid exaggerated cartoon animation.
 
 # 4. Visual Identity
 
-The overall website visual language should be based around:
+The overall visual language is a **warm, natural world with a cool, precise robot and interface inside it**.
 
-### Primary colors
+### World colors
 
-- White
-- Soft/off-white
-- Power blue / clean futuristic blue
+- Warm white limestone
+- Sky blue
+- Muted turquoise sea
+- Olive / pine green
+- Red-ochre earth
+- Dry-grass peach
 
-### Supporting colors
+### Identity colors
 
-- Very light cool gray
-- Neutral gray
-- Dark charcoal/near-black for dark mode
-- Subtle blue glow
+- Cream-white + power blue (the robot)
+- Cyan glow for anything that is powered on
+- Orange as a small accent
+- Deep navy for text and interface
+
+Shadows are soft blue-violet, never black.
 
 The website should not become a generic "blue tech website."
 
-Blue is an accent and identity color, while the overall experience remains clean.
+Blue is the identity color of the robot and the technology, set inside a warm, natural world.
 
 ## Light mode
 
-Light mode should feel like:
+Light mode is **daytime on the coast**:
 
-- White space
-- Soft shadows
-- Glass
-- Bright atmospheric lighting
-- Blue accents
-- Clean 3D objects
-- Soft reflections
+- Warm sunlight and a huge blue sky
+- Soft blue-violet shadows
+- Light atmospheric haze
+- The glass gateway reflecting the sky
+- Simple, faceted 3D shapes
 - Minimal UI
 
 ## Dark mode
 
-Dark mode should feel like:
+Dark mode is **night on the same coast**:
 
-- Deep charcoal/near-black environment
+- Deep blue night sky (not black)
+- A few warm lights in the world
+- The robot's cyan glow and the machines' lights carry the scene
 - White typography
-- Blue illumination
-- Soft volumetric lighting
 - Stronger contrast
 - Cinematic atmosphere
 
@@ -367,6 +391,13 @@ For example:
 - The robot guides them.
 - The environment starts revealing information.
 - My identity becomes clearer as the journey progresses.
+
+The current decision for the first screen:
+
+- **No headline.** The robot speaks one short line in a speech bubble, for example: *"I wasn't the first thing he built."*
+- The robot **never says my name**. My name appears only as a small wordmark in the corner.
+- As the visitor scrolls, the robot continues the story in short, abstract lines. Each line hints at something real; nothing is invented.
+- All text stays minimal.
 
 However, the visitor should not be confused about what the website represents.
 
@@ -582,25 +613,31 @@ The website should support:
 
 # 15. 3D Environment Direction
 
+The world is a **stylized, sunlit sci-fi coast**, inspired by the art direction of *Caravan SandWitch*: a Provence-like place where old machines are slowly being reclaimed by nature. It should feel natural and real, without being photorealistic.
+
 The environment should be minimal enough that the robot remains the focus.
 
-Possible environment qualities:
+Environment qualities:
 
-- White architectural spaces
-- Soft blue illumination
-- Large open spaces
-- Glass
-- Stone/metal accents
-- Soft atmospheric fog
-- Light beams
-- Reflective surfaces
-- Subtle particles
+- Warm white limestone plateaus and cliffs
+- A strip of turquoise sea and a huge open sky with sculpted clouds
+- A few pines, dry grass and red-ochre paths
+- Old machines living in nature (cranes, antennas, containers): quiet and hopeful, never menacing
+- Warm sunlight, soft blue-violet shadows, light haze
+- Light beams through the glass gateway
 - Depth
 - Large negative space
 
-The environment should not look like a video game level.
+Style rules (these keep it buildable in 3D):
 
-It should feel like a **premium digital exhibition / interactive installation**.
+- Simple low-poly shapes with hard, faceted edges
+- Flat matte colors, almost no textures
+- Few props, reused across scenes; every object should be buildable from a few simple shapes
+- Distant elements (sky, headlands) can be flat backdrops
+
+The art style comes from a game, but the website must not behave like a game level: no HUD, no quest markers, no collectibles.
+
+It should feel like a **calm, explorable diorama**: an exhibition built around one person, set outdoors.
 
 ---
 
@@ -612,14 +649,12 @@ It should look like an entrance to another world.
 
 Desired characteristics:
 
-- Tall architectural frame
-- Glass-like or transparent surfaces
-- White structural elements
-- Blue/cool light
-- Bright light from inside
+- A tall, thin glass pane with softly rounded corners in a slim white frame
+- Standing upright in the landscape, in the center of the opening scene, with the robot right beside it
+- The glass reflects the sky
+- Cool light coming through it, with a gentle shaft of light on the ground in front
 - Natural environment visible through it when appropriate
 - Strong depth
-- Reflections
 - Slight atmospheric haze
 
 The gateway can represent:
@@ -642,14 +677,15 @@ The lighting should create the premium cinematic quality.
 
 Use concepts such as:
 
-- Soft key lighting
+- Warm sunlight as the key light
+- Blue-violet sky light filling the shadows
 - Rim lighting
-- Blue emissive accents
-- Volumetric light
-- Subtle bloom
+- Cyan emissive accents on things that are powered on
+- Light shafts through the gateway
+- Subtle bloom, only on things that glow
 - Soft shadows
 - Ambient occlusion where appropriate
-- Reflections
+- Reflections only on the gateway's glass
 - Atmospheric haze
 
 The robot should be readable even in dark environments.
@@ -662,21 +698,19 @@ Avoid excessive bloom.
 
 # 18. Materials
 
-Materials should feel physically believable.
+Materials should be simple and matte, so the world looks hand-crafted rather than rendered.
 
 Preferred materials:
 
-- Matte white
-- Satin white
-- Soft plastic
-- Brushed metal
-- Glass
-- Frosted glass
-- Polished subtle metal
-- Dark matte materials for contrast
-- Soft emissive blue
+- Flat matte colors (a painted look)
+- Warm white stone
+- Matte painted metal
+- Dark rubber
+- Cloth (the robot's flag)
+- Glass, only for the gateway
+- Soft emissive cyan for powered parts
 
-Avoid making everything glossy.
+Avoid glossy plastic, chrome and heavy textures.
 
 The world should feel tactile.
 
@@ -718,10 +752,15 @@ Possible UI elements:
 - Contact action
 - Theme toggle
 - Accessibility controls
+- The robot's speech bubble: a white rounded bubble with a small cyan name tag and one highlighted word
 
 UI should feel integrated with the environment.
 
+The interface is **cool and precise** (navy text, cyan accents, frosted glass for small controls, solid panels for anything you read). It sits on top of the warm world, the same contrast the game uses.
+
 Avoid floating dashboard-style UI everywhere.
+
+Avoid game-style UI: health bars, minimaps, quest markers, inventories.
 
 The website should remain primarily spatial and visual.
 
@@ -778,14 +817,14 @@ The visitor should not stare at an empty screen while the entire portfolio downl
 
 # 23. 3D Model / Asset Workflow
 
-The robot will eventually be modeled separately and imported into the website.
+The robot is modeled separately in Blender and imported into the website. The current model is `public/models/alu.glb` (Alu v2, exported in a neutral rest pose).
 
-The website should be designed around a standard web-friendly 3D workflow, preferably:
+The website should be designed around a standard web-friendly 3D workflow:
 
 - GLB / GLTF
-- PBR materials
-- Proper texture maps
-- Rigged model where animation is required
+- Flat vertex colors on a few matte materials (the stylized look needs almost no texture maps)
+- Low triangle counts (Alu v2 is about 8k triangles)
+- Rigged model where animation is required (Alu uses named pivot joints)
 - Separate animations where useful
 
 The robot model should be prepared so it can support:
@@ -898,7 +937,7 @@ Potential sounds:
 - Very subtle mechanical movement
 - Footstep/wheel sounds
 - Portal activation
-- Soft environmental ambience
+- Soft environmental ambience (wind, distant sea)
 - UI interaction sounds
 - Gentle futuristic atmosphere
 
@@ -990,7 +1029,7 @@ The website should feel like a real engineer showing their work.
 
 A useful mental model:
 
-> Imagine entering a futuristic engineering exhibition designed specifically around one person.
+> Imagine an engineering exhibition designed specifically around one person, set outdoors in a calm, stylized world.
 
 The visitor walks through it.
 
@@ -1014,17 +1053,14 @@ The entire experience is the portfolio.
 
 The visual direction can take inspiration from:
 
-- Apple-like product presentation
-- High-end cinematic 3D
-- Futuristic architecture
+- **The art direction of *Caravan SandWitch*** (Studio Plane Toast; art director Charles Boury), the main reference for the look: stylized low-poly shapes, a world inspired by a real place, hopeful sci-fi, bright round characters against calmer backgrounds, and a cool interface over a warm world
+- Glass gateways standing in natural landscapes (`inspo/Glass_One.jpg`, `inspo/Glass_Two.jpg`)
+- Apple-like restraint in the interface
+- High-end cinematic camera work
 - Interactive digital exhibitions
-- Premium sci-fi interfaces
 - Friendly robotics
-- Minimal white-space-heavy design
-- Glass architecture
-- Soft blue illumination
 
-But the final site should not look like a clone of another website.
+But the final site should not look like a clone of another website. Do not copy the game's characters, van, locations, logo or UI.
 
 The goal is to combine these references into a distinct identity.
 
@@ -1038,7 +1074,9 @@ Do not turn the portfolio into:
 - A generic developer portfolio template
 - A collection of Tailwind cards
 - A cyberpunk website
-- A gaming website
+- A gaming website: the art style is game-inspired, but there are no HUDs, health bars, minimaps, quest markers, inventories or game menus
+- A copy of *Caravan SandWitch*
+- A photorealistic or glossy 3D render
 - A dashboard
 - A 3D demo with no meaningful content
 - A collection of random 3D objects
@@ -1175,8 +1213,8 @@ When making design or implementation decisions, preserve these priorities:
 
 1. **Story over template**
 2. **Robot as the visual guide**
-3. **White + power-blue identity**
-4. **Premium cinematic 3D**
+3. **Cream-white + power-blue robot in a warm, stylized natural world**
+4. **Cinematic, stylized 3D built from simple shapes**
 5. **Software + AI + robotics as interconnected disciplines**
 6. **Non-linear / spatial storytelling rather than room-only structure**
 7. **Real project content remains easy to access**
@@ -1184,7 +1222,7 @@ When making design or implementation decisions, preserve these priorities:
 9. **Performance matters**
 10. **Accessibility matters**
 11. **Animations should feel physical and intentional**
-12. **Do not copy WALL-E, TVA, Apple, or any other reference literally**
+12. **Do not copy WALL-E, TVA, Apple, Caravan SandWitch, or any other reference literally**
 13. **The final identity must be original**
 14. **Do not invent biographical facts or project details**
 15. **When information is missing, keep the structure flexible rather than fabricating content**
@@ -1193,4 +1231,4 @@ When making design or implementation decisions, preserve these priorities:
 
 # 39. One-Sentence Definition
 
-**An interactive cinematic 3D portfolio where a custom white-and-power-blue robot guides visitors through the interconnected world of my software engineering, AI engineering, and robotics work.**
+**An interactive cinematic 3D portfolio where a small cream-and-blue explorer robot guides visitors through a sunlit, stylized world of my interconnected software engineering, AI engineering, and robotics work.**

@@ -1,0 +1,729 @@
+<title>Clean Room</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one 1120px column; the scene plate is the hero; sections are flat, divided by hairlines; only floating things get glass or shadow. */
+:root{
+  --bg:#F7FCFE; --surface:#FFFFFF; --surface-2:#E9F7FB; --line:#CFE8F0;
+  --ink:#03045E; --ink-2:#4A5B7A;
+  --blue:#00B4D8; --blue-deep:#0077B6; --blue-glow:#90E0EF; --blue-wash:#CAF0F8;
+  --focus:#0077B6;
+  --glass:rgba(255,255,255,.64); --glass-edge:rgba(255,255,255,.85); --glass-line:rgba(3,4,94,.08);
+  --float:0 14px 34px -14px rgba(3,4,94,.22),0 2px 6px -2px rgba(3,4,94,.08);
+  --sheet:0 40px 90px -30px rgba(3,4,94,.30);
+  --plate-filter:none; --plate-tint:transparent; --eye-glow:0;
+  --sans:"Geist","Inter Tight",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"Geist Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  /* radius scale (balanced, overwritten by the tuner) */
+  --r-xs:8px; --r-sm:12px; --r-md:16px; --r-lg:24px; --r-xl:32px; --r-pill:999px; --portal-r:0.30;
+  /* headline weight (overwritten by the tuner) */
+  --w-head:600; --t-head:-.035em;
+  --ui-dur:200ms; --ui-ease:cubic-bezier(.2,.7,.2,1);
+  --world-dur:900ms; --world-ease:cubic-bezier(.22,1,.36,1);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#03045E; --surface:#0A1070; --surface-2:#121A80; --line:#28338F;
+    --ink:#F2FBFD; --ink-2:#A9C9D6;
+    --blue:#00B4D8; --blue-deep:#48C6E6; --blue-glow:#90E0EF; --blue-wash:#0E2F6E;
+    --focus:#00B4D8;
+    --glass:rgba(10,16,112,.58); --glass-edge:rgba(255,255,255,.14); --glass-line:rgba(255,255,255,.10);
+    --float:0 14px 34px -14px rgba(0,0,0,.55),0 2px 6px -2px rgba(0,0,0,.3);
+    --sheet:0 40px 90px -30px rgba(0,0,0,.7);
+    --plate-filter:brightness(.52) saturate(1.25); --plate-tint:rgba(3,4,94,.42); --eye-glow:1;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#03045E; --surface:#0A1070; --surface-2:#121A80; --line:#28338F;
+  --ink:#F2FBFD; --ink-2:#A9C9D6;
+  --blue:#00B4D8; --blue-deep:#48C6E6; --blue-glow:#90E0EF; --blue-wash:#0E2F6E;
+  --focus:#00B4D8;
+  --glass:rgba(10,16,112,.58); --glass-edge:rgba(255,255,255,.14); --glass-line:rgba(255,255,255,.10);
+  --float:0 14px 34px -14px rgba(0,0,0,.55),0 2px 6px -2px rgba(0,0,0,.3);
+  --sheet:0 40px 90px -30px rgba(0,0,0,.7);
+  --plate-filter:brightness(.52) saturate(1.25); --plate-tint:rgba(3,4,94,.42); --eye-glow:1;
+  color-scheme:dark;
+}
+:root[data-radius="crisp"]{--r-xs:6px;--r-sm:8px;--r-md:12px;--r-lg:18px;--r-xl:24px;--portal-r:0.18}
+:root[data-radius="soft"]{--r-xs:10px;--r-sm:16px;--r-md:22px;--r-lg:32px;--r-xl:44px;--portal-r:0.50}
+:root[data-weight="500"]{--w-head:500;--t-head:-.025em}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;padding-inline:clamp(16px,4vw,48px);padding-block:0 140px}
+.wrap{max-width:1120px;margin:0 auto}
+h1,h2,h3{margin:0;text-wrap:balance}
+h1{font-size:clamp(48px,9vw,112px);line-height:.95;font-weight:var(--w-head);letter-spacing:var(--t-head)}
+h2{font-size:clamp(28px,3.6vw,40px);line-height:1.1;font-weight:var(--w-head);letter-spacing:calc(var(--t-head) * .7)}
+h3{font-size:19px;line-height:1.3;font-weight:500;letter-spacing:-.01em}
+p{margin:0;max-width:62ch}
+.label{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);font-weight:500;line-height:1.4}
+.muted{color:var(--ink-2)}
+.num{font-variant-numeric:tabular-nums}
+a{color:var(--blue-deep)}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:var(--r-xs)}
+
+/* header */
+header{padding-block:56px 40px;display:grid;gap:28px}
+.topline{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.lede{font-size:clamp(19px,2.2vw,24px);line-height:1.4;max-width:40ch}
+.answers{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:18px 28px;margin:0;padding-top:24px;border-top:1px solid var(--line)}
+.answers div{display:grid;gap:4px;min-width:0}
+.answers dt{margin:0}
+.answers dd{margin:0;font-size:15px;font-weight:500}
+
+section{padding-block:72px;border-top:1px solid var(--line);display:grid;gap:36px}
+.sec-head{display:grid;grid-template-columns:minmax(0,200px) minmax(0,1fr);gap:24px;align-items:start}
+.sec-head .label{padding-top:12px}
+.sec-head .intro{display:grid;gap:14px;min-width:0}
+@media (max-width:720px){.sec-head{grid-template-columns:1fr;gap:10px}.sec-head .label{padding-top:0}}
+
+/* ───────── scene plate ───────── */
+.scene-wrap{container-type:inline-size;display:grid;gap:14px}
+.scene{position:relative;aspect-ratio:16/10;max-width:100%;border-radius:var(--r-lg);overflow:hidden;background:#D9E2E8;isolation:isolate;transition:border-radius var(--ui-dur) var(--ui-ease)}
+.stage{position:absolute;inset:0;transform-origin:76% 55%;transition:transform var(--world-dur) var(--world-ease)}
+.stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:var(--plate-filter);display:block}
+.stage .tint{position:absolute;inset:0;background:var(--plate-tint);mix-blend-mode:multiply;pointer-events:none}
+.stage .eyes{position:absolute;inset:0;pointer-events:none;opacity:var(--eye-glow);mix-blend-mode:screen;
+  background:
+   radial-gradient(circle at 64.7% 32.6%,rgba(160,235,250,.95) 0 1.4%,rgba(0,180,216,.35) 2.6%,transparent 4.4%),
+   radial-gradient(circle at 71.9% 32.6%,rgba(160,235,250,.95) 0 1.4%,rgba(0,180,216,.35) 2.6%,transparent 4.4%)}
+.scene.focused .stage{transform:scale(1.045)}
+.co-svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.co-svg .lead{fill:none;stroke:var(--ink-2);stroke-width:1;vector-effect:non-scaling-stroke;stroke-dasharray:1;stroke-dashoffset:1;
+  transition:stroke-dashoffset 160ms var(--ui-ease);transition-delay:calc(var(--i) * 45ms)}
+.co-svg .anchor{fill:var(--ink-2);opacity:0;transition:opacity 120ms var(--ui-ease);transition-delay:calc(var(--i) * 45ms)}
+.co-svg .on .lead{stroke:var(--blue)} .co-svg .on .anchor{fill:var(--blue)}
+.scene.focused .lead{stroke-dashoffset:0}
+.scene.focused .anchor{opacity:1}
+.co-label{position:absolute;transform:translateY(-50%);font-family:var(--mono);font-size:clamp(9px,.95cqi,12px);letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink);font-weight:500;white-space:nowrap;opacity:0;transition:opacity 120ms var(--ui-ease);transition-delay:calc(var(--i) * 45ms + 120ms)}
+.co-label.on{color:var(--blue-deep)}
+.co-label .n{display:none}
+.co-label small{display:block;font-size:.9em;color:var(--ink-2);font-weight:400;letter-spacing:.06em}
+.scene.focused .co-label{opacity:1}
+.co-dim{position:absolute;transform:translate(-100%,-50%);font-family:var(--mono);font-size:clamp(9px,.95cqi,12px);letter-spacing:.06em;color:var(--ink);opacity:0;transition:opacity 120ms var(--ui-ease) 260ms}
+.scene.focused .co-dim{opacity:1}
+
+.overlay{position:absolute;inset:0;pointer-events:none}
+.overlay > *{pointer-events:auto}
+.hero-copy{position:absolute;left:5.5%;top:31%;width:40%;display:grid;gap:1.6cqi;transition:opacity var(--ui-dur) var(--ui-ease)}
+.scene.focused .hero-copy{opacity:.28}
+.hero-copy .h{font-size:4.5cqi;line-height:1.02;font-weight:var(--w-head);letter-spacing:var(--t-head);color:var(--ink);text-wrap:balance}
+.hero-copy .label{font-size:clamp(9px,.95cqi,12px)}
+.wordmark{position:absolute;left:3%;top:4.2%;font-weight:500;font-size:clamp(11px,1.25cqi,15px);letter-spacing:-.01em;color:var(--ink);display:flex;align-items:center;gap:.6em}
+.wordmark i{width:1.35em;height:1.35em;border:1.5px solid currentColor;border-radius:50%;display:inline-block}
+
+.glass{background:var(--glass);-webkit-backdrop-filter:blur(20px) saturate(1.5);backdrop-filter:blur(20px) saturate(1.5);
+  border:1px solid var(--glass-line);box-shadow:inset 0 1px 0 var(--glass-edge),var(--float);border-radius:var(--r-pill)}
+.chrome{position:absolute;right:3%;top:3.2%;display:flex;align-items:center;gap:2px;padding:4px;font-size:clamp(11px,1.15cqi,14px);font-weight:500}
+.chrome span{padding:.42em .9em;border-radius:var(--r-pill);display:flex;align-items:center;gap:.4em;color:var(--ink)}
+.chrome svg{width:1.2em;height:1.2em;display:block}
+.chapter{position:absolute;left:3%;bottom:4.5%;display:flex;align-items:center;gap:.8em;padding:.55em 1em .55em .8em;font-family:var(--mono);font-size:clamp(9px,.95cqi,12px);letter-spacing:.08em;text-transform:uppercase;color:var(--ink);font-weight:500}
+.chapter .bar{width:2px;height:1.6em;background:var(--line);border-radius:2px;position:relative;overflow:hidden}
+.chapter .bar::after{content:"";position:absolute;left:0;right:0;bottom:0;height:30%;background:var(--blue)}
+
+.scene-controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.legend{display:none;margin:0;padding:0;list-style:none;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);gap:4px 18px;flex-wrap:wrap}
+@container (max-width:620px){
+  .co-label small{display:none}
+  .co-label{font-size:9px}
+  .co-label .nm{display:none}
+  .co-label .n{display:inline}
+  .legend{display:flex}
+  .hero-copy{width:52%}
+  .chrome .txt{display:none}
+}
+
+/* buttons */
+.btn{font:inherit;font-size:15px;font-weight:500;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-pill);
+  padding:9px 18px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:background var(--ui-dur) var(--ui-ease),border-color var(--ui-dur) var(--ui-ease)}
+.btn:hover{border-color:var(--ink-2)}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn[aria-pressed="true"] .dot{background:var(--blue)}
+.btn .dot{width:7px;height:7px;border-radius:50%;background:var(--line);transition:background var(--ui-dur) var(--ui-ease)}
+
+/* principles */
+.principles{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:0 40px}
+.principles article{display:grid;gap:8px;padding-block:22px;border-top:1px solid var(--line);min-width:0;align-content:start}
+.principles p{font-size:16px;color:var(--ink-2)}
+
+/* shape */
+.radii{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-end}
+.radii figure{margin:0;display:grid;gap:10px;justify-items:start}
+.radii .sw{background:var(--surface);border:1px solid var(--line)}
+.radii figcaption{display:grid;gap:2px}
+.radii figcaption b{font-weight:500;font-size:14px}
+.shape-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:40px;align-items:center}
+@media (max-width:820px){.shape-grid{grid-template-columns:1fr}}
+.portal-fig{margin:0;display:grid;gap:12px}
+.portal-fig svg{width:100%;max-width:440px;height:auto;display:block}
+.portal-fig .frame{fill:var(--surface);stroke:var(--ink);stroke-width:1.5}
+.portal-fig .pane{fill:var(--blue-wash);stroke:var(--line);stroke-width:1}
+.portal-fig .pool{fill:var(--blue);opacity:.16}
+.portal-fig .floor{stroke:var(--line);stroke-width:1}
+.portal-fig .dim{stroke:var(--ink-2);stroke-width:1;fill:none}
+.portal-fig .ext{stroke:var(--ink-2);stroke-width:1;stroke-dasharray:2 3;fill:none;opacity:.6}
+.portal-fig text{font-family:var(--mono);font-size:11px;letter-spacing:.06em;fill:var(--ink-2)}
+.portal-fig .alu{fill:var(--ink-2);opacity:.45}
+.portal-fig .alu-eye{fill:var(--blue)}
+
+/* type */
+.specimen{display:grid;gap:28px}
+.spec-row{display:grid;grid-template-columns:minmax(0,150px) minmax(0,1fr);gap:24px;align-items:baseline;padding-bottom:24px;border-bottom:1px solid var(--line)}
+.spec-row:last-child{border-bottom:0;padding-bottom:0}
+@media (max-width:640px){.spec-row{grid-template-columns:1fr;gap:8px}}
+.d-display{font-size:clamp(40px,7vw,88px);line-height:1;font-weight:var(--w-head);letter-spacing:var(--t-head)}
+.d-h2{font-size:clamp(26px,3.4vw,36px);line-height:1.12;font-weight:var(--w-head);letter-spacing:calc(var(--t-head) * .7)}
+.d-body{font-size:18px;line-height:1.6;max-width:62ch}
+.d-mono{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+.figures{display:flex;flex-wrap:wrap;gap:12px 40px}
+.figures div{display:grid;gap:2px}
+.figures b{font-size:clamp(34px,4.4vw,48px);font-weight:500;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
+
+/* surfaces */
+.levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:0 40px}
+.levels article{display:grid;gap:8px;padding-block:20px;border-top:1px solid var(--line);align-content:start;min-width:0}
+.levels p{font-size:15.5px;color:var(--ink-2)}
+.mock{position:relative;aspect-ratio:16/10;max-width:100%;border-radius:var(--r-lg);overflow:hidden;container-type:inline-size;background:#D9E2E8}
+.mock .bgimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1);filter:var(--plate-filter) blur(2px)}
+.mock .dimmer{position:absolute;inset:0;background:var(--plate-tint);mix-blend-mode:multiply}
+.mock .fog{position:absolute;inset:0;background:var(--bg);opacity:.32}
+.mock .sheet{position:absolute;top:2.4%;right:1.6%;bottom:2.4%;width:min(56%,560px);background:var(--surface);border-radius:var(--r-lg);box-shadow:var(--sheet);
+  padding:4.2cqi 4cqi;display:flex;flex-direction:column;gap:2cqi;overflow:hidden}
+.mock .esc{position:absolute;top:4.6%;right:calc(1.6% + min(56%,560px) + 1.6%);padding:.5em .9em;font-family:var(--mono);font-size:clamp(9px,1cqi,12px);letter-spacing:.08em;color:var(--ink);font-weight:500}
+.sheet .label{font-size:clamp(8px,1cqi,11.5px)}
+.sheet .t{font-size:clamp(18px,3.6cqi,40px);line-height:1.02;font-weight:var(--w-head);letter-spacing:var(--t-head)}
+.sheet .b{font-size:clamp(10px,1.45cqi,16px);line-height:1.5;color:var(--ink-2);max-width:none}
+.sheet .row{display:grid;grid-template-columns:28% 1fr;gap:1.4cqi;padding-top:1.2cqi;border-top:1px solid var(--line);font-size:clamp(9px,1.3cqi,14px);line-height:1.45}
+.sheet .row .label{padding-top:.2em}
+.sheet .acts{display:flex;gap:1cqi;margin-top:auto;flex-wrap:wrap}
+.sheet .acts span{font-size:clamp(9px,1.3cqi,14px);font-weight:500;padding:.6em 1.2em;border-radius:var(--r-pill);border:1px solid var(--line)}
+.sheet .acts span.pri{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+@container (max-width:560px){.mock .sheet{width:62%}.mock .esc{display:none}.sheet .row:nth-of-type(n+3){display:none}}
+
+/* evidence */
+.ev-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:48px;align-items:start}
+@media (max-width:860px){.ev-grid{grid-template-columns:1fr}}
+.anatomy svg{width:100%;max-width:440px;height:auto;display:block}
+.anatomy .lead{stroke:var(--blue);stroke-width:1;fill:none}
+.anatomy .rest{stroke:var(--ink-2)}
+.anatomy .obj{fill:var(--surface);stroke:var(--line);stroke-width:1}
+.anatomy text{font-family:var(--mono);font-size:11px;letter-spacing:.07em;fill:var(--ink)}
+.anatomy .note{fill:var(--ink-2);font-size:10px}
+.anatomy .dotb{fill:var(--blue)} .anatomy .dotg{fill:var(--ink-2)}
+.rules{margin:0;padding:0;list-style:none;display:grid;gap:10px;font-size:15.5px}
+.rules li{display:grid;grid-template-columns:18px 1fr;gap:8px;color:var(--ink-2)}
+.rules li::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--line);margin-top:.6em}
+.chart{display:grid;gap:14px;min-width:0}
+.chart svg{width:100%;height:auto;display:block}
+.chart .grid{stroke:var(--line);stroke-width:1;stroke-dasharray:2 4}
+.chart .base{stroke:var(--ink-2);stroke-width:1}
+.chart .tick{font-family:var(--mono);font-size:11px;fill:var(--ink-2)}
+.chart .rlabel{font-family:var(--sans);font-size:15px;fill:var(--ink);font-weight:500}
+.chart .stem{stroke:var(--ink-2);stroke-width:2;stroke-linecap:round;transition:stroke var(--ui-dur) var(--ui-ease)}
+.chart .end{fill:var(--ink-2);transition:fill var(--ui-dur) var(--ui-ease)}
+.chart .val{font-family:var(--mono);font-size:12.5px;fill:var(--ink-2);font-variant-numeric:tabular-nums;transition:fill var(--ui-dur) var(--ui-ease)}
+.chart .row{cursor:pointer;outline:none}
+.chart .row .hit{fill:transparent}
+.chart .row.on .stem{stroke:var(--blue)} .chart .row.on .end{fill:var(--blue)} .chart .row.on .val{fill:var(--ink)}
+.chart .row:focus-visible .hit{stroke:var(--focus);stroke-width:2}
+.pipe{font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:var(--ink-2);display:grid;gap:6px;padding-top:14px;border-top:1px solid var(--line)}
+.pipe b{color:var(--ink);font-weight:500}
+
+/* motion */
+.motion{display:grid;gap:18px}
+.table-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:15px}
+th,td{text-align:left;padding:12px 16px 12px 0;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);font-weight:500}
+td code{font-family:var(--mono);font-size:12.5px;color:var(--ink-2)}
+.tracks{display:grid;gap:14px;max-width:640px}
+.track{display:grid;grid-template-columns:minmax(0,150px) minmax(0,1fr);gap:16px;align-items:center}
+.lane{position:relative;height:24px;border-bottom:1px solid var(--line)}
+.lane .puck{position:absolute;left:0;top:4px;width:16px;height:16px;border-radius:50%;background:var(--ink)}
+.lane.ui .puck{transition:left var(--ui-dur) var(--ui-ease)}
+.lane.world .puck{transition:left var(--world-dur) var(--world-ease);background:var(--blue)}
+.motion.played .lane .puck{left:calc(100% - 16px)}
+
+/* guardrails */
+.guard{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:24px 48px}
+.guard ul{margin:0;padding:0;list-style:none;display:grid;gap:0}
+.guard li{padding-block:12px;border-top:1px solid var(--line);font-size:15.5px;display:grid;grid-template-columns:22px 1fr;gap:6px}
+.guard li::before{font-family:var(--mono);font-size:12px;color:var(--ink-2);padding-top:.2em}
+.guard .no li::before{content:"×"}
+.guard .yes li::before{content:"→";color:var(--blue-deep)}
+
+/* changes */
+.changes{display:grid;gap:0;margin:0;padding:0;list-style:none}
+.changes li{display:grid;grid-template-columns:minmax(0,120px) minmax(0,1fr);gap:20px;padding-block:14px;border-top:1px solid var(--line);font-size:15.5px}
+.changes li .label{padding-top:.25em}
+@media (max-width:560px){.changes li{grid-template-columns:1fr;gap:4px}}
+.open{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:20px 40px}
+.open article{display:grid;gap:8px;padding:22px;border:1px solid var(--line);border-radius:var(--r-md);background:var(--surface);align-content:start}
+
+/* tuner: the page's own glass chrome */
+.tuner{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:20;
+  display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 14px;padding:6px 8px 6px 16px;width:max-content;max-width:calc(100vw - 24px);border-radius:var(--r-lg)}
+.tuner .grp{display:flex;align-items:center;gap:8px}
+.tuner .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+.seg{display:flex;gap:2px;padding:2px;border-radius:var(--r-pill);background:var(--glass-line)}
+.seg button{font:inherit;font-size:13px;font-weight:500;color:var(--ink-2);background:transparent;border:0;border-radius:var(--r-pill);padding:6px 11px;cursor:pointer;transition:background var(--ui-dur) var(--ui-ease),color var(--ui-dur) var(--ui-ease)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(3,4,94,.12)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.seg button .rec{color:var(--blue-deep);font-size:10px;vertical-align:super;margin-left:1px}
+@media (max-width:560px){.tuner{padding:8px;gap:6px}.tuner .lbl{display:none}.seg button{padding:6px 9px;font-size:12.5px}}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{transition-duration:0ms!important;transition-delay:0ms!important}
+}
+</style>
+
+<div class="wrap">
+
+<header>
+  <div class="topline">
+    <span class="label">Portfolio design language · proposal</span>
+    <span class="label num">2026-10-03</span>
+  </div>
+  <h1>Clean Room</h1>
+  <p class="lede">An engineering lab with the finish of an Apple product page. The surfaces are calm and soft. Everything placed on them is real evidence of the work. Alu is the only thing allowed to be playful.</p>
+  <dl class="answers">
+    <div><dt class="label">Warmth</dt><dd>Only in Alu</dd></div>
+    <div><dt class="label">The room</dt><dd>Engineering lab</dd></div>
+    <div><dt class="label">Admire</dt><dd>Apple</dd></div>
+    <div><dt class="label">Corners</dt><dd>Soft rounded, portal too</dd></div>
+    <div><dt class="label">Lab layer</dt><dd>Callouts on focus</dd></div>
+    <div><dt class="label">Surfaces</dt><dd>Glass chrome, solid reading</dd></div>
+    <div><dt class="label">Motion</dt><dd>Smooth world, crisp UI</dd></div>
+    <div><dt class="label">Voice</dt><dd>Apple head, lab body</dd></div>
+    <div><dt class="label">Data</dt><dd>Redrawn in site style</dd></div>
+    <div><dt class="label">Evidence</dt><dd>Fusion 360, Blender, URDF, graphs</dd></div>
+  </dl>
+</header>
+
+<!-- ───────── SCENE ───────── -->
+<section aria-labelledby="s-scene">
+  <div class="sec-head">
+    <span class="label">Scene</span>
+    <div class="intro">
+      <h2 id="s-scene">Calm until you look closer.</h2>
+      <p class="muted">The first screen, mocked with the current Alu render. Floating controls are glass. Focus Alu (hover, tap or the button) and the lab layer appears: the camera eases in slowly, the callouts snap in fast.</p>
+    </div>
+  </div>
+
+  <div class="scene-wrap">
+    <div class="scene" id="scene">
+      <div class="stage" id="stage">
+        <img src="assets/alu-plate.webp" alt="Alu, a small white and blue robot with a screen face, waving in a soft grey-blue studio." width="1600" height="1000">
+        <div class="tint"></div>
+        <div class="eyes"></div>
+        <svg class="co-svg" viewBox="0 0 1600 1000" preserveAspectRatio="none" aria-hidden="true">
+          <g class="on" style="--i:0"><path class="lead" pathLength="1" d="M1386 140 H1420"/><circle class="anchor" cx="1386" cy="140" r="5"/></g>
+          <g style="--i:1"><path class="lead" pathLength="1" d="M1332 332 H1420"/><circle class="anchor" cx="1332" cy="332" r="5"/></g>
+          <g style="--i:2"><path class="lead" pathLength="1" d="M1252 738 H1420"/><circle class="anchor" cx="1252" cy="738" r="5"/></g>
+          <g style="--i:3"><path class="lead" pathLength="1" d="M1218 880 H1420"/><circle class="anchor" cx="1218" cy="880" r="5"/></g>
+          <g style="--i:4">
+            <path class="lead" pathLength="1" d="M945 196 H770 M985 908 H770"/>
+            <path class="lead" pathLength="1" d="M790 196 V908 M780 196 H800 M780 908 H800"/>
+          </g>
+        </svg>
+        <div class="co-label on" style="--i:0;left:89.4%;top:14%"><span class="n">1 </span><span class="nm">Antenna<small>tilts with mood</small></span></div>
+        <div class="co-label" style="--i:1;left:89.4%;top:33.2%"><span class="n">2 </span><span class="nm">Ear light<small>state indicator</small></span></div>
+        <div class="co-label" style="--i:2;left:89.4%;top:73.8%"><span class="n">3 </span><span class="nm">Gripper<small>points, holds</small></span></div>
+        <div class="co-label" style="--i:3;left:89.4%;top:88%"><span class="n">4 </span><span class="nm">Heel wheel<small>rolls, then steps</small></span></div>
+        <div class="co-dim num" style="left:48.4%;top:55.2%">1.0 m</div>
+      </div>
+
+      <div class="overlay">
+        <div class="wordmark"><i aria-hidden="true"></i>Ashish Gupta</div>
+        <div class="glass chrome" aria-hidden="true">
+          <span><span class="txt">Menu</span><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 7h12M4 13h12"/></svg></span>
+          <span><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="6"/><path d="M10 4a6 6 0 0 1 0 12z" fill="currentColor"/></svg></span>
+          <span><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 8v4h3l4 3V5L7 8z"/><path d="M14 7.5a3.5 3.5 0 0 1 0 5"/></svg></span>
+        </div>
+        <div class="hero-copy">
+          <div class="h">Ashish Gupta builds machines that think.</div>
+          <div class="label">Scroll to enter</div>
+        </div>
+        <div class="glass chapter"><span class="bar" aria-hidden="true"></span><span class="num">02 / 07 · Threshold</span></div>
+      </div>
+    </div>
+    <ol class="legend" aria-label="Callouts">
+      <li>1 Antenna</li><li>2 Ear light</li><li>3 Gripper</li><li>4 Heel wheel</li>
+    </ol>
+    <div class="scene-controls">
+      <button class="btn" id="focusBtn" type="button" aria-pressed="false"><span class="dot" aria-hidden="true"></span><span>Focus Alu</span></button>
+      <span class="label">Height from <span style="text-transform:none">alu_build.py</span> · callout text is placeholder</span>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── PRINCIPLES ───────── -->
+<section aria-labelledby="s-principles">
+  <div class="sec-head">
+    <span class="label">Principles</span>
+    <div class="intro">
+      <h2 id="s-principles">Seven rules that keep it grown-up.</h2>
+      <p class="muted">Every later decision should be checkable against these. If a new element breaks one, the element changes.</p>
+    </div>
+  </div>
+  <div class="principles">
+    <article><span class="label">Warmth</span><h3>Alu is the only joke.</h3><p>His face, his wobble, his wave. The interface around him never jokes: no emoji, no bounce, no illustrations, no exclamation marks.</p></article>
+    <article><span class="label">Substance</span><h3>Polished surface, honest content.</h3><p>Surfaces are calm and smooth. What sits on them is lab evidence: CAD, dimensions, training numbers, the parts that make the thing work.</p></article>
+    <article><span class="label">Disclosure</span><h3>Evidence on focus.</h3><p>Nothing is annotated at rest. Focus an artifact and thin leader lines name its parts and sizes. Look away and they retract.</p></article>
+    <article><span class="label">Shape</span><h3>One soft shape family.</h3><p>Every corner is rounded, from a chip to the 4 m portal. Radius grows with size and never passes a quarter of the short side.</p></article>
+    <article><span class="label">Colour</span><h3>Blue means powered.</h3><p>Cyan appears only on things that are on: Alu's eyes, the portal light, the focused callout, the line you are reading in a chart. Everything at rest is white, grey or navy.</p></article>
+    <article><span class="label">Motion</span><h3>Smooth world, crisp instruments.</h3><p>The camera and Alu move on slow, damped springs. Labels, callouts and panels arrive in under 220 ms and never overshoot.</p></article>
+    <article><span class="label">Voice</span><h3>Short headline, exact body.</h3><p>A headline makes one claim in six words or fewer. Body text says what it is, why it exists and how well it works, with real numbers.</p></article>
+  </div>
+</section>
+
+<!-- ───────── SHAPE ───────── -->
+<section aria-labelledby="s-shape">
+  <div class="sec-head">
+    <span class="label">Shape</span>
+    <div class="intro">
+      <h2 id="s-shape">Soft, but measured.</h2>
+      <p class="muted">Rounded corners read as toy-like when every surface gets the same big radius. Here the radius scales with the object, and full pills are reserved for buttons and floating chrome.</p>
+    </div>
+  </div>
+  <div class="shape-grid">
+    <div class="radii" id="radii">
+      <figure><div class="sw" style="width:56px;height:28px;border-radius:var(--r-xs)"></div><figcaption><b>Chip</b><span class="label num" data-r="--r-xs"></span></figcaption></figure>
+      <figure><div class="sw" style="width:96px;height:44px;border-radius:var(--r-sm)"></div><figcaption><b>Control</b><span class="label num" data-r="--r-sm"></span></figcaption></figure>
+      <figure><div class="sw" style="width:120px;height:96px;border-radius:var(--r-md)"></div><figcaption><b>Panel</b><span class="label num" data-r="--r-md"></span></figcaption></figure>
+      <figure><div class="sw" style="width:150px;height:150px;border-radius:var(--r-lg)"></div><figcaption><b>Sheet, plate</b><span class="label num" data-r="--r-lg"></span></figcaption></figure>
+      <figure><div class="sw" style="width:96px;height:36px;border-radius:var(--r-pill);display:grid;place-items:center;font-size:13px;font-weight:500">Button</div><figcaption><b>Pill</b><span class="label">Buttons, chrome</span></figcaption></figure>
+    </div>
+    <figure class="portal-fig">
+      <svg viewBox="0 0 440 400" role="img" aria-labelledby="portal-t">
+        <title id="portal-t">The portal as a rounded rectangle, 2.2 m wide and 4 m tall, with Alu at 1.0 m for scale.</title>
+        <line class="floor" x1="20" y1="350" x2="420" y2="350"/>
+        <ellipse class="pool" cx="190" cy="356" rx="120" ry="12"/>
+        <rect id="portalFrame" class="frame" x="102" y="30" width="176" height="320" rx="24"/>
+        <rect id="portalPane" class="pane" x="112" y="40" width="156" height="310" rx="16"/>
+        <!-- Alu silhouette, 1.0 m = 80 px -->
+        <g transform="translate(318 270)">
+          <rect class="alu" x="0" y="0" width="34" height="24" rx="6"/>
+          <rect class="alu-eye" x="9" y="9" width="4" height="6" rx="2"/><rect class="alu-eye" x="20" y="9" width="4" height="6" rx="2"/>
+          <rect class="alu" x="6" y="27" width="22" height="20" rx="5"/>
+          <rect class="alu" x="8" y="49" width="7" height="31" rx="3"/><rect class="alu" x="19" y="49" width="7" height="31" rx="3"/>
+        </g>
+        <!-- dimensions -->
+        <path class="ext" d="M102 30 H66 M102 350 H66"/>
+        <path class="dim" d="M74 30 V350 M68 30 H80 M68 350 H80"/>
+        <text x="60" y="194" text-anchor="end">4.0 m</text>
+        <path class="ext" d="M102 350 V382 M278 350 V382"/>
+        <path class="dim" d="M102 376 H278 M102 370 V382 M278 370 V382"/>
+        <text x="190" y="396" text-anchor="middle">2.2 m</text>
+        <path class="dim" d="M366 270 V350 M360 270 H372 M360 350 H372"/>
+        <text x="380" y="314">1.0 m</text>
+        <text id="portalR" x="290" y="26">r 0.30 m</text>
+      </svg>
+      <figcaption class="label">Portal · same profile at 1.6 m for case-study doors</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ───────── TYPE ───────── -->
+<section aria-labelledby="s-type">
+  <div class="sec-head">
+    <span class="label">Type</span>
+    <div class="intro">
+      <h2 id="s-type">Geist, with the mono doing the lab work.</h2>
+      <p class="muted">Geist Sans carries headlines and prose. Geist Mono labels anything measured, dated or named by a machine. Use the tuner to compare a quiet 500 headline with an Apple-style 600.</p>
+    </div>
+  </div>
+  <div class="specimen">
+    <div class="spec-row"><span class="label">Display · 88/48</span><div class="d-display">Sees ripeness. Picks on its own.</div></div>
+    <div class="spec-row"><span class="label">H2 · 36/26</span><div class="d-h2">Twelve joints, one learned gait.</div></div>
+    <div class="spec-row"><span class="label">Body · 18/17</span><p class="d-body">TomatoBot is an autonomous harvesting robot. A YOLOv11 model sorts tomatoes into six ripeness classes at 88% real-world accuracy, and a 6-DOF arm driven by inverse kinematics does the picking from a Raspberry Pi.</p></div>
+    <div class="spec-row"><span class="label">Label · Mono 12</span><div class="d-mono num">Robotics · AI · Software &nbsp;/&nbsp; 2024-12 &nbsp;/&nbsp; YOLOv11 · Raspberry Pi · Android</div></div>
+    <div class="spec-row"><span class="label">Figures · tabular</span>
+      <div class="figures">
+        <div><b>88%</b><span class="label">Ripeness accuracy</span></div>
+        <div><b>6</b><span class="label">Ripeness classes</span></div>
+        <div><b>6-DOF</b><span class="label">Picking arm</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── SURFACES ───────── -->
+<section aria-labelledby="s-surf">
+  <div class="sec-head">
+    <span class="label">Surfaces</span>
+    <div class="intro">
+      <h2 id="s-surf">Glass to steer, paper to read.</h2>
+      <p class="muted">Three levels, nothing in between. A case study opening over the scene shows all three at once.</p>
+    </div>
+  </div>
+  <div class="levels">
+    <article><span class="label">Glass chrome</span><h3>Floats over the 3D</h3><p>Nav, chapter chip, close button. Blur 20 px, 64% white or navy, a 1 px light edge, a soft navy shadow. One line of text at most.</p></article>
+    <article><span class="label">Solid sheet</span><h3>Anything read for more than a glance</h3><p>The case-study sheet and the menu. Opaque surface, large radius, the deepest shadow on the page. Text never sits on glass.</p></article>
+    <article><span class="label">Flat</span><h3>Structure inside a sheet</h3><p>No fill, no shadow, no nested cards. Hairlines and mono labels do the dividing.</p></article>
+  </div>
+  <div class="mock" aria-label="Mockup of the TomatoBot case-study sheet open over the scene">
+    <img class="bgimg" src="assets/alu-plate.webp" alt="" width="1600" height="1000">
+    <div class="dimmer"></div><div class="fog"></div>
+    <div class="glass esc">ESC · CLOSE</div>
+    <div class="sheet">
+      <span class="label">Robotics · AI · Software</span>
+      <div class="t">TomatoBot</div>
+      <p class="b">An autonomous tomato-harvesting robot that sees ripeness and picks on its own, running at the edge on a Raspberry Pi.</p>
+      <div class="row"><span class="label">Vision</span><span>YOLOv11, six ripeness classes, 88% real-world accuracy</span></div>
+      <div class="row"><span class="label">Motion</span><span>6-DOF arm with inverse kinematics; U-Net path segmentation</span></div>
+      <div class="row"><span class="label">Control</span><span>Android app, manual and autonomous modes</span></div>
+      <div class="row"><span class="label">Record</span><span class="num">Published in IJICTDC, 2026-01</span></div>
+      <div class="acts"><span class="pri">Read the paper</span><span>View the model</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── EVIDENCE ───────── -->
+<section aria-labelledby="s-ev">
+  <div class="sec-head">
+    <span class="label">Evidence</span>
+    <div class="intro">
+      <h2 id="s-ev">Callouts and charts share one hand.</h2>
+      <p class="muted">Your CAD files become the artifacts, and the callouts point at them. Your graphs are redrawn from the raw numbers with the same hairlines, mono labels and single blue.</p>
+    </div>
+  </div>
+  <div class="ev-grid">
+    <div class="anatomy" style="display:grid;gap:20px">
+      <svg viewBox="0 0 440 210" role="img" aria-labelledby="anat-t">
+        <title id="anat-t">Anatomy of a callout: anchor dot, leader line, label and value.</title>
+        <rect class="obj" x="20" y="40" width="150" height="130" rx="16"/>
+        <circle class="dotb" cx="140" cy="72" r="4"/>
+        <path class="lead" d="M140 72 H250"/>
+        <text x="260" y="69">FOCUSED PART</text>
+        <text class="note" x="260" y="84">value · unit</text>
+        <circle class="dotg" cx="74" cy="150" r="4"/>
+        <path class="lead rest" d="M74 150 H250"/>
+        <text x="260" y="147" style="fill:var(--ink-2)">RESTING PART</text>
+        <text class="note" x="260" y="162">value · unit</text>
+        <text class="note" x="20" y="200">anchor · 1 px leader · mono label</text>
+      </svg>
+      <ul class="rules">
+        <li>Four callouts at most in view.</li>
+        <li>Leaders run horizontal, or 45° and then horizontal, never crossing each other.</li>
+        <li>The focused one turns cyan; the rest stay grey.</li>
+        <li>Each line draws in over 160 ms, then its label appears. Retract in reverse.</li>
+        <li>Values carry real units: m, mm, DOF, %, reward.</li>
+      </ul>
+    </div>
+    <div class="chart">
+      <span class="label">JeevI · PPO locomotion policy · converged reward by terrain</span>
+      <svg viewBox="0 0 640 210" role="img" aria-labelledby="chart-t">
+        <title id="chart-t">Converged reward by terrain: flat 256.27, rough 191.83, obstacle 184.05.</title>
+        <line class="grid" x1="280" y1="20" x2="280" y2="170"/>
+        <line class="grid" x1="440" y1="20" x2="440" y2="170"/>
+        <line class="grid" x1="600" y1="20" x2="600" y2="170"/>
+        <line class="base" x1="120" y1="20" x2="120" y2="170"/>
+        <text class="tick" x="120" y="194" text-anchor="middle">0</text>
+        <text class="tick" x="280" y="194" text-anchor="middle">100</text>
+        <text class="tick" x="440" y="194" text-anchor="middle">200</text>
+        <text class="tick" x="600" y="194" text-anchor="middle">300</text>
+        <g class="row on" tabindex="0" role="button" aria-label="Flat terrain, 256.27">
+          <rect class="hit" x="0" y="25" width="640" height="40" rx="8"/>
+          <text class="rlabel" x="0" y="50">Flat</text>
+          <line class="stem" x1="120" y1="45" x2="530" y2="45"/><circle class="end" cx="530" cy="45" r="5"/>
+          <text class="val" x="544" y="49.5">256.27</text>
+        </g>
+        <g class="row" tabindex="0" role="button" aria-label="Rough terrain, 191.83">
+          <rect class="hit" x="0" y="75" width="640" height="40" rx="8"/>
+          <text class="rlabel" x="0" y="100">Rough</text>
+          <line class="stem" x1="120" y1="95" x2="427" y2="95"/><circle class="end" cx="427" cy="95" r="5"/>
+          <text class="val" x="441" y="99.5">191.83</text>
+        </g>
+        <g class="row" tabindex="0" role="button" aria-label="Obstacle terrain, 184.05">
+          <rect class="hit" x="0" y="125" width="640" height="40" rx="8"/>
+          <text class="rlabel" x="0" y="150">Obstacle</text>
+          <line class="stem" x1="120" y1="145" x2="414.5" y2="145"/><circle class="end" cx="414.5" cy="145" r="5"/>
+          <text class="val" x="428.5" y="149.5">184.05</text>
+        </g>
+      </svg>
+      <p class="muted" style="font-size:14px">Real values from the JeevI repo (PROFILE.md §3). The training curves themselves should come from your TensorBoard or CSV exports.</p>
+      <div class="pipe">
+        <span><b>CAD</b> &nbsp;Fusion 360 → STEP → Blender → GLB, ≤ 25k triangles</span>
+        <span><b>Robots</b> &nbsp;JeevI URDF / USD → Blender → GLB, joints kept for posing</span>
+        <span><b>Data</b> &nbsp;TensorBoard / CSV → JSON → drawn in SVG at build time</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── MOTION ───────── -->
+<section aria-labelledby="s-motion">
+  <div class="sec-head">
+    <span class="label">Motion</span>
+    <div class="intro">
+      <h2 id="s-motion">Two clocks.</h2>
+      <p class="muted">The world runs on a slow clock with springs. Instruments run on a fast clock with no overshoot. Alu is the only thing allowed to overshoot.</p>
+    </div>
+  </div>
+  <div class="motion" id="motion">
+    <div class="tracks">
+      <div class="track"><span class="label">UI · 200 ms</span><div class="lane ui"><span class="puck"></span></div></div>
+      <div class="track"><span class="label">World · 900 ms</span><div class="lane world"><span class="puck"></span></div></div>
+    </div>
+    <div><button class="btn" id="playBtn" type="button">Play both</button></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Layer</th><th>Moves like</th><th>Duration</th><th>Curve</th></tr></thead>
+        <tbody>
+          <tr><td>Chrome, labels, callouts</td><td>An instrument</td><td class="num">120–220 ms</td><td><code>cubic-bezier(.2,.7,.2,1)</code></td></tr>
+          <tr><td>Sheets, menu</td><td>A drawer</td><td class="num">320 ms</td><td><code>cubic-bezier(.2,.7,.2,1)</code></td></tr>
+          <tr><td>Camera</td><td>A dolly on rails</td><td class="num">600–900 ms</td><td>Critically damped spring, no roll, no shake</td></tr>
+          <tr><td>Alu</td><td>A character</td><td>Per clip</td><td>Springs; overshoot allowed here only</td></tr>
+          <tr><td>Threshold</td><td>One-off</td><td class="num">2.4 s</td><td>Skippable with any key or tap</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── GUARDRAILS ───────── -->
+<section aria-labelledby="s-guard">
+  <div class="sec-head">
+    <span class="label">Guardrails</span>
+    <div class="intro">
+      <h2 id="s-guard">Soft without turning young.</h2>
+      <p class="muted">Rounded corners, pale blue and a cute robot are each fine. Childish happens when they stack up with bounce, pastel fills and emoji. These lines stop that.</p>
+    </div>
+  </div>
+  <div class="guard">
+    <ul class="no">
+      <li>Emoji, stickers or illustrations anywhere in the UI.</li>
+      <li>Bounce or overshoot on anything that is not Alu.</li>
+      <li>Pastel-filled cards. Tint only behind a selected artifact.</li>
+      <li>One big radius on everything. Radius follows size.</li>
+      <li>Paragraphs on glass.</li>
+      <li>Shadows on things that sit on the page.</li>
+      <li>Exclamation marks, "Hey", "passionate".</li>
+    </ul>
+    <ul class="yes">
+      <li>Mono labels for every date, unit, model and part name.</li>
+      <li>Real units and real numbers, sourced.</li>
+      <li>Hairlines for structure; navy-tinted shadows only for floating layers.</li>
+      <li>One cyan thing switched on per view, besides Alu.</li>
+      <li>Focus ring in ocean on light and cyan on navy, so it passes 3:1.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ───────── DECIDE ───────── -->
+<section aria-labelledby="s-decide">
+  <div class="sec-head">
+    <span class="label">Decide</span>
+    <div class="intro">
+      <h2 id="s-decide">Two choices left.</h2>
+      <p class="muted">Use the tuner at the bottom of the page. Every mock above updates live, in both themes.</p>
+    </div>
+  </div>
+  <div class="open">
+    <article><span class="label">Headline weight</span><h3>500 or 600</h3><p class="muted" style="font-size:15.5px">600 is closer to Apple's product pages and holds up over the 3D. 500 is quieter and more editorial. Recommended: 600 for display and H1/H2, 500 everywhere else.</p></article>
+    <article><span class="label">Corner scale</span><h3>Crisp, balanced or soft</h3><p class="muted" style="font-size:15.5px">Crisp reads most technical, soft reads most consumer. Recommended: balanced (12 / 16 / 24), which matches Alu's own shell without making the panels feel inflated.</p></article>
+  </div>
+  <ul class="changes" aria-label="What changes in DESIGN.md">
+    <li><span class="label">§0 One-line</span><span>Gallery becomes a clean-room engineering lab, still laid out like an exhibition (README §31).</span></li>
+    <li><span class="label">§2 Colour</span><span>Adds "blue means powered" and the ocean/cyan focus-ring rule.</span></li>
+    <li><span class="label">§3 Type</span><span>Headline weight from the tuner; mono owns all measured data.</span></li>
+    <li><span class="label">§4 Motif</span><span>Monogram stays as it is; the 45° stroke rule is dropped.</span></li>
+    <li><span class="label">§6 Portal</span><span>Chamfered frame becomes a rounded rectangle with the radius above.</span></li>
+    <li><span class="label">§8 Case study</span><span>Solid sheet, large radius, glass close chip; callouts and redrawn charts inside.</span></li>
+    <li><span class="label">New §12</span><span>Clean Room: principles, radius scale, surface levels, callout spec, motion clocks, guardrails.</span></li>
+  </ul>
+</section>
+
+</div>
+
+<div class="glass tuner" role="group" aria-label="Tune the language">
+  <div class="grp"><span class="lbl">Headline</span>
+    <div class="seg" data-key="weight">
+      <button type="button" id="w500" data-v="500" aria-pressed="false">500</button>
+      <button type="button" id="w600" data-v="600" aria-pressed="true">600<span class="rec" aria-hidden="true">●</span><span class="sr"> (recommended)</span></button>
+    </div>
+  </div>
+  <div class="grp"><span class="lbl">Corners</span>
+    <div class="seg" data-key="radius">
+      <button type="button" id="rCrisp" data-v="crisp" aria-pressed="false">Crisp</button>
+      <button type="button" id="rBal" data-v="balanced" aria-pressed="true">Balanced<span class="rec" aria-hidden="true">●</span><span class="sr"> (recommended)</span></button>
+      <button type="button" id="rSoft" data-v="soft" aria-pressed="false">Soft</button>
+    </div>
+  </div>
+  <div class="grp"><span class="lbl">Theme</span>
+    <div class="seg" data-key="theme">
+      <button type="button" id="tLight" data-v="light" aria-pressed="false">Light</button>
+      <button type="button" id="tDark" data-v="dark" aria-pressed="false">Dark</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var root = document.documentElement;
+  var KEY = 'cleanroom-tuner';
+  var state = {weight:'600', radius:'balanced', theme:null};
+  try { var s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) { state.weight = s.weight || state.weight; state.radius = s.radius || state.radius; } } catch(e) {}
+  var host = root.getAttribute('data-theme');
+  state.theme = (host === 'dark' || host === 'light') ? host : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+  function apply(){
+    root.setAttribute('data-weight', state.weight);
+    root.setAttribute('data-radius', state.radius);
+    root.setAttribute('data-theme', state.theme);
+    document.querySelectorAll('.seg').forEach(function(seg){
+      var k = seg.getAttribute('data-key');
+      seg.querySelectorAll('button').forEach(function(b){ b.setAttribute('aria-pressed', String(b.getAttribute('data-v') === state[k])); });
+    });
+    var cs = getComputedStyle(root);
+    document.querySelectorAll('[data-r]').forEach(function(el){ el.textContent = cs.getPropertyValue(el.getAttribute('data-r')).trim(); });
+    var pr = parseFloat(cs.getPropertyValue('--portal-r')) || 0.3;
+    var px = pr * 80; // 1 m = 80 px
+    document.getElementById('portalFrame').setAttribute('rx', px.toFixed(1));
+    document.getElementById('portalPane').setAttribute('rx', Math.max(px - 8, 2).toFixed(1));
+    document.getElementById('portalR').textContent = 'r ' + pr.toFixed(2) + ' m';
+    try { localStorage.setItem(KEY, JSON.stringify({weight:state.weight, radius:state.radius})); } catch(e) {}
+  }
+  document.querySelectorAll('.seg button').forEach(function(b){
+    b.addEventListener('click', function(){
+      state[b.parentElement.getAttribute('data-key')] = b.getAttribute('data-v');
+      apply();
+    });
+  });
+  apply();
+
+  // scene focus: hover the right half, tap, or the button
+  var scene = document.getElementById('scene'), btn = document.getElementById('focusBtn');
+  function setFocus(on){
+    scene.classList.toggle('focused', on);
+    btn.setAttribute('aria-pressed', String(on));
+    btn.lastElementChild.textContent = on ? 'Release' : 'Focus Alu';
+  }
+  btn.addEventListener('click', function(){ setFocus(!scene.classList.contains('focused')); });
+  scene.addEventListener('pointermove', function(e){
+    if (e.pointerType !== 'mouse') return;
+    var r = scene.getBoundingClientRect();
+    setFocus((e.clientX - r.left) / r.width > 0.5);
+  });
+  scene.addEventListener('pointerleave', function(e){ if (e.pointerType === 'mouse') setFocus(false); });
+  scene.addEventListener('pointerup', function(e){ if (e.pointerType !== 'mouse') setFocus(!scene.classList.contains('focused')); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') setFocus(false); });
+
+  // chart: one row powered at a time
+  var rows = document.querySelectorAll('.chart .row');
+  rows.forEach(function(r){
+    function on(){ rows.forEach(function(x){ x.classList.toggle('on', x === r); }); }
+    r.addEventListener('mouseenter', on); r.addEventListener('focus', on); r.addEventListener('click', on);
+  });
+
+  // motion demo
+  var motion = document.getElementById('motion');
+  document.getElementById('playBtn').addEventListener('click', function(){ motion.classList.toggle('played'); });
+})();
+</script>

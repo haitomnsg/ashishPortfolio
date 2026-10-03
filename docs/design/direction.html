@@ -1,0 +1,517 @@
+<title>Alu Opens a Door</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a single 1040px column of "placards" on a white exhibition floor; hairlines, no cards; blue only as light. */
+:root{
+  --bg:#F7FCFE; --surface:#FFFFFF; --surface-2:#E9F7FB; --line:#CFE8F0;
+  --ink:#03045E; --ink-2:#4A5B7A;
+  --blue:#00B4D8; --blue-deep:#0077B6; --blue-glow:#90E0EF; --blue-wash:#CAF0F8;
+  --metal:#B9CCD6; --dark-part:#03045E; --glass:rgba(255,255,255,.55);
+  --sans:"Geist","Inter Tight",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"Geist Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --shadow:0 30px 60px -30px rgba(14,17,22,.18);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#03045E; --surface:#0A1070; --surface-2:#121A80; --line:#28338F;
+    --ink:#F2FBFD; --ink-2:#A9C9D6;
+    --blue:#00B4D8; --blue-deep:#48C6E6; --blue-glow:#90E0EF; --blue-wash:#0E2F6E;
+    --metal:#7E93A6; --dark-part:#020331; --glass:rgba(255,255,255,.08);
+    --shadow:0 30px 60px -30px rgba(0,0,0,.6); color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#03045E; --surface:#0A1070; --surface-2:#121A80; --line:#28338F;
+  --ink:#F2FBFD; --ink-2:#A9C9D6;
+  --blue:#00B4D8; --blue-deep:#48C6E6; --blue-glow:#90E0EF; --blue-wash:#0E2F6E;
+  --metal:#7E93A6; --dark-part:#020331; --glass:rgba(255,255,255,.08);
+  --shadow:0 30px 60px -30px rgba(0,0,0,.6); color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;padding-inline:clamp(16px,4vw,48px);padding-block:0 96px}
+.wrap{max-width:1040px;margin:0 auto}
+h1,h2,h3{font-weight:500;letter-spacing:-.02em;text-wrap:balance;margin:0}
+h1{font-size:clamp(40px,7vw,88px);line-height:1;letter-spacing:-.03em}
+h2{font-size:clamp(26px,3.4vw,36px);line-height:1.15}
+h3{font-size:19px;letter-spacing:-.01em}
+p{margin:0;max-width:62ch}
+a{color:var(--blue-deep);text-decoration:none;border-bottom:1px solid var(--line)}
+a:hover{border-color:var(--blue-deep)}
+.label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);font-weight:500}
+.lede{font-size:clamp(19px,2.2vw,24px);line-height:1.4;color:var(--ink);max-width:34ch}
+.muted{color:var(--ink-2)}
+header{padding-block:56px 40px;border-bottom:1px solid var(--line);display:grid;gap:22px}
+.topline{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+section{padding-block:64px;border-bottom:1px solid var(--line);display:grid;gap:28px}
+.sec-head{display:grid;grid-template-columns:120px 1fr;gap:24px;align-items:start}
+.sec-head .label{padding-top:8px}
+.sec-head .intro{display:grid;gap:12px}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:28px}
+.cols>*{min-width:0}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;font-size:15px}
+.kv dt{font-family:var(--mono);font-size:12px;color:var(--ink-2);padding-top:3px;white-space:nowrap}
+.kv dd{margin:0}
+ul.plain{list-style:none;margin:0;padding:0;display:grid;gap:8px;font-size:15.5px}
+ul.plain li{padding-left:18px;position:relative}
+ul.plain li::before{content:"";position:absolute;left:0;top:.68em;width:8px;height:1px;background:var(--ink-2)}
+/* floor: a framed white plane for drawings */
+.floor{background:var(--surface);border:1px solid var(--line);padding:clamp(16px,3vw,40px);position:relative;overflow:hidden}
+.floor svg{display:block;width:100%;height:auto;max-width:100%}
+.floor .cap{position:absolute;left:16px;bottom:12px}
+/* palette */
+.ratio{display:flex;height:14px;border:1px solid var(--line);overflow:hidden}
+.ratio span{display:block;height:100%}
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.sw{display:grid;gap:8px;min-width:0}
+.sw i{display:block;height:72px;border:1px solid var(--line)}
+.sw b{font-weight:500;font-size:14px}
+.sw small{font-family:var(--mono);font-size:11px;color:var(--ink-2);display:block}
+/* type */
+.spec{display:grid;gap:18px;border-top:1px solid var(--line);padding-top:18px}
+.spec .row{display:grid;grid-template-columns:110px 1fr;gap:16px;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:16px}
+.spec .row>span{font-family:var(--mono);font-size:11px;color:var(--ink-2);letter-spacing:.06em}
+.spec .row>div{min-width:0;overflow-wrap:anywhere}
+.placard{font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:var(--ink-2);display:flex;gap:14px;flex-wrap:wrap}
+.placard b{color:var(--ink);font-weight:500}
+/* chapters */
+.chapters{display:grid;gap:0;border-top:1px solid var(--line)}
+.ch{display:grid;grid-template-columns:44px 170px 1fr;gap:18px;padding-block:18px;border-bottom:1px solid var(--line);align-items:start}
+.ch .n{font-family:var(--mono);font-size:12px;color:var(--ink-2);padding-top:4px}
+.ch h3{padding-top:1px}
+.ch p{font-size:15.5px;color:var(--ink-2)}
+.ch p b{color:var(--ink);font-weight:500}
+/* chrome frame */
+.frame{aspect-ratio:16/9;max-width:100%;background:var(--surface);border:1px solid var(--line);position:relative;font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--ink-2)}
+.frame .c{position:absolute;padding:6px 8px;border:1px dashed var(--line)}
+.frame .tl{top:14px;left:14px}.frame .tr{top:14px;right:14px}.frame .bl{bottom:14px;left:14px;display:flex;gap:10px;align-items:flex-end}
+.frame .bc{bottom:14px;left:50%;transform:translateX(-50%)}
+.frame .stroke{width:1px;height:36px;background:var(--line);position:relative}
+.frame .stroke::after{content:"";position:absolute;left:0;top:0;width:100%;height:55%;background:var(--blue)}
+.frame .robot{position:absolute;left:41%;bottom:24%;width:6%;aspect-ratio:1/1.3}
+.frame .door{position:absolute;left:50%;transform:translateX(-50%);bottom:22%;width:12%;height:52%;border:2px solid var(--ink);opacity:.85}
+.frame .door::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,var(--blue-wash),transparent 60%)}
+.frame .shaft{position:absolute;left:50%;transform:translateX(-50%);bottom:12%;width:22%;height:12%;background:radial-gradient(ellipse at top,var(--blue-wash),transparent 70%)}
+/* sheet mock */
+.sheetmock{aspect-ratio:16/9;background:var(--surface-2);border:1px solid var(--line);position:relative;overflow:hidden}
+.sheetmock .scene{position:absolute;inset:0;opacity:.45;background:radial-gradient(ellipse at 30% 70%,var(--blue-wash),transparent 60%)}
+.sheetmock .sheet{position:absolute;top:0;right:0;bottom:0;width:54%;background:var(--surface);border-left:1px solid var(--line);padding:5%;display:grid;gap:8px;align-content:start;box-shadow:var(--shadow)}
+.sheetmock .sheet i{display:block;height:8px;background:var(--line)}
+.sheetmock .sheet i.t{height:14px;width:70%;background:var(--ink)}
+.sheetmock .sheet i.img{height:26%;background:var(--surface-2);border:1px solid var(--line)}
+.sheetmock .sheet i.m{width:60%;background:var(--blue-wash)}
+.sheetmock .sheet i.s{width:85%}
+/* materials */
+.mats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px}
+.mat{display:grid;gap:8px;min-width:0}
+.mat i{display:block;aspect-ratio:1;border:1px solid var(--line);border-radius:50%}
+.mat small{font-size:13px;color:var(--ink-2)}
+.mat b{font-size:14px;font-weight:500}
+.m-white i{background:radial-gradient(circle at 35% 30%,#fff,#e6eaf0 70%,#cfd6df)}
+.m-metal i{background:repeating-linear-gradient(90deg,var(--metal) 0 1px,transparent 1px 3px),radial-gradient(circle at 40% 35%,#eef1f5,#9aa4b2)}
+.m-glass i{background:radial-gradient(circle at 40% 35%,var(--glass),transparent 70%),var(--surface-2);backdrop-filter:blur(4px);border-color:var(--metal)}
+.m-rubber i{background:radial-gradient(circle at 40% 35%,#3a404a,var(--dark-part) 75%)}
+.m-emis i{background:radial-gradient(circle at 50% 50%,#fff 0,var(--blue-glow) 20%,var(--blue) 45%,var(--blue-wash) 75%,transparent 80%);box-shadow:0 0 30px var(--blue-glow)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.two>*{min-width:0}
+@media (max-width:760px){
+  .sec-head{grid-template-columns:1fr;gap:8px}
+  .ch{grid-template-columns:36px 1fr}
+  .ch p{grid-column:1/-1}
+  .two{grid-template-columns:1fr}
+  .spec .row{grid-template-columns:1fr;gap:6px}
+}
+.q{display:grid;gap:10px;counter-reset:q}
+.q div{display:grid;grid-template-columns:28px 1fr;gap:10px;font-size:15.5px}
+.q div::before{counter-increment:q;content:counter(q,decimal-leading-zero);font-family:var(--mono);font-size:12px;color:var(--ink-2);padding-top:3px}
+footer{padding-top:28px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="topline">
+    <span class="label">Design direction · v0.2 · 2026‑09‑30</span>
+    <span class="label">haitomns.dev · Ashish Gupta</span>
+  </div>
+  <h1>Alu opens a door.</h1>
+  <p class="lede">A small white‑and‑power‑blue robot opens a glass door into a white exhibition of one engineer's work, where three light paths run through the floor and braid into one.</p>
+  <p class="muted" style="font-size:15px">This page decides what the portfolio <em>is</em>. The README decides what it should <em>feel like</em>. When they disagree, the README wins and this page gets fixed.</p>
+</header>
+
+<!-- 01 THESIS -->
+<section id="thesis">
+  <div class="sec-head"><span class="label">01 · Thesis</span>
+    <div class="intro"><h2>Three paths, one floor.</h2>
+    <p>Programming and robotics both began in Class 9. AI joined at Kathmandu University. The floor of the exhibition shows this literally: three thin light strokes start at one point, spread into three benches, and braid back into one line where the projects that need all three live.</p></div></div>
+  <div class="floor">
+    <svg viewBox="0 0 1000 300" role="img" aria-label="Three light paths starting at one point, spreading apart, then braiding together">
+      <defs>
+        <linearGradient id="fade" x1="0" x2="1"><stop offset="0" stop-color="var(--blue)" stop-opacity="0"/><stop offset=".12" stop-color="var(--blue)"/><stop offset=".88" stop-color="var(--blue)"/><stop offset="1" stop-color="var(--blue)" stop-opacity="0"/></linearGradient>
+      </defs>
+      <line x1="0" y1="150" x2="1000" y2="150" stroke="var(--line)" stroke-dasharray="2 6"/>
+      <path d="M40 150 C 220 150, 260 60, 420 60 L 560 60 C 700 60, 720 150, 860 150" fill="none" stroke="url(#fade)" stroke-width="2"/>
+      <path d="M40 150 L 860 150" fill="none" stroke="url(#fade)" stroke-width="2"/>
+      <path d="M40 150 C 220 150, 260 240, 420 240 L 560 240 C 700 240, 720 150, 860 150" fill="none" stroke="url(#fade)" stroke-width="2"/>
+      <circle cx="40" cy="150" r="4" fill="var(--blue)"/>
+      <circle cx="40" cy="150" r="12" fill="none" stroke="var(--blue-glow)" opacity=".5"/>
+      <g font-family="var(--mono)" font-size="11" fill="var(--ink-2)" letter-spacing="1">
+        <text x="30" y="188">CLASS 9</text>
+        <text x="430" y="46">ROBOTICS · MATTE + METAL</text>
+        <text x="430" y="138">SOFTWARE · HAIRLINE GRIDS</text>
+        <text x="430" y="272">AI · FROSTED GLASS + LIGHT</text>
+        <text x="878" y="154">CROSSROADS</text>
+      </g>
+      <g fill="var(--ink)" stroke="none">
+        <rect x="470" y="52" width="10" height="16" rx="1"/><rect x="520" y="54" width="14" height="12" rx="1"/>
+        <rect x="470" y="142" width="16" height="16" fill="none" stroke="var(--ink)"/><rect x="520" y="142" width="16" height="16" fill="none" stroke="var(--ink)"/>
+        <circle cx="478" cy="240" r="8" fill="none" stroke="var(--ink)"/><circle cx="526" cy="240" r="8" fill="var(--blue-wash)" stroke="var(--ink)"/>
+      </g>
+    </svg>
+    <span class="label cap">Floor plan · light strokes are 6 mm inlays, blue only where light travels</span>
+  </div>
+  <div class="cols">
+    <div><h3>What every visitor should leave knowing</h3>
+      <ul class="plain">
+        <li>Ashish Gupta builds machines that think, and the software around them.</li>
+        <li>Robotics, software and AI are one practice, grown together since Class 9.</li>
+        <li>The work is real: a blood bank uses RedSoil, restaurants run on RestHat, TomatoBot is published.</li>
+        <li>The little robot is his; the world is his; the projects are the substance.</li>
+      </ul></div>
+    <div><h3>One sentence on the first screen</h3>
+      <p class="lede" style="font-size:22px">Ashish Gupta builds machines that think.</p>
+      <p class="muted" style="font-size:15px;margin-top:10px">Appears two seconds after Alu, in Geist 500. Below it, a single mono label: <span class="label" style="color:var(--ink)">scroll to enter</span>. Nothing else.</p></div>
+  </div>
+</section>
+
+<!-- 02 COLOUR -->
+<section id="colour">
+  <div class="sec-head"><span class="label">02 · Colour</span>
+    <div class="intro"><h2>A white world with one water ramp.</h2>
+    <p>Ashish's five: navy, ocean, cyan, sky, ice. Blue is light, not paint. It lives in Alu's eyes and joints, in the shaft of light through the door, in focus rings. Nothing else is coloured. The three domains are told apart by shape and material, never by hue.</p></div></div>
+  <div>
+    <div class="ratio" aria-label="Colour proportion on a typical screen: 85 percent white and neutral, 10 percent grey structure, 5 percent blue">
+      <span style="width:85%;background:var(--surface)"></span><span style="width:10%;background:var(--line)"></span><span style="width:5%;background:var(--blue)"></span>
+    </div>
+    <div class="placard" style="margin-top:8px"><span><b>85%</b> white / neutral</span><span><b>10%</b> grey structure</span><span><b>5%</b> power blue</span></div>
+  </div>
+  <div class="swatches">
+    <div class="sw"><i style="background:#03045E"></i><b>Navy</b><small>#03045E · ink on white · night ground</small></div>
+    <div class="sw"><i style="background:#0077B6"></i><b>Ocean</b><small>#0077B6 · links, pressed (4.6:1)</small></div>
+    <div class="sw"><i style="background:#00B4D8"></i><b>Cyan · power blue</b><small>#00B4D8 · eyes, hubs, portal light</small></div>
+    <div class="sw"><i style="background:#90E0EF"></i><b>Sky · glow</b><small>#90E0EF · bloom halos 20–35%</small></div>
+    <div class="sw"><i style="background:#CAF0F8"></i><b>Ice · wash</b><small>#CAF0F8 · behind artifacts, door haze</small></div>
+    <div class="sw"><i style="background:#F7FCFE"></i><b>Ground</b><small>#F7FCFE · ice at 30% · dark #03045E</small></div>
+    <div class="sw"><i style="background:#FFFFFF"></i><b>Surface</b><small>#FFFFFF · dark #0A1070</small></div>
+    <div class="sw"><i style="background:#E9F7FB"></i><b>Recess</b><small>#E9F7FB · dark #121A80</small></div>
+    <div class="sw"><i style="background:#CFE8F0"></i><b>Line</b><small>#CFE8F0 · dark #28338F</small></div>
+    <div class="sw"><i style="background:#B9CCD6"></i><b>Metal</b><small>#B9CCD6 · brushed · dark #7E93A6</small></div>
+    <div class="sw"><i style="background:#4A5B7A"></i><b>Ink 2</b><small>#4A5B7A · secondary · dark #A9C9D6</small></div>
+    <div class="sw"><i style="background:#020331"></i><b>Dark part</b><small>#020331 · rubber, housings (night)</small></div>
+  </div>
+  <div class="cols">
+    <div><h3>Light mode</h3><p class="muted" style="font-size:15px">White space, soft contact shadows, glass, a bright key light from above‑left, blue only in emissives and the door's light.</p></div>
+    <div><h3>Dark mode</h3><p class="muted" style="font-size:15px">Same building at night, and the night is navy, not black. The key light dims, materials stay, cyan emissives carry the scene. Type flips to ice‑white. No new colours appear.</p></div>
+    <div><h3>Retired</h3><p class="muted" style="font-size:15px">The current pink / green / blue skill cards, every gradient larger than a shadow, and tag‑pill walls.</p></div>
+  </div>
+</section>
+
+<!-- 03 TYPE -->
+<section id="type">
+  <div class="sec-head"><span class="label">03 · Typography</span>
+    <div class="intro"><h2>One family. Two weights. One placard voice.</h2>
+    <p>Geist Sans carries every headline and paragraph at weights 400 and 500 only. Geist Mono, small and uppercase, is the voice of the museum placard: chapter names, dates, stacks, coordinates.</p></div></div>
+  <div class="spec">
+    <div class="row"><span>DISPLAY 96 / 64</span><div style="font-size:clamp(44px,7vw,96px);line-height:1;letter-spacing:-.03em;font-weight:500">Machines that think.</div></div>
+    <div class="row"><span>H1 56 / 40</span><div style="font-size:clamp(32px,4.5vw,56px);line-height:1.05;letter-spacing:-.02em;font-weight:500">TomatoBot v2</div></div>
+    <div class="row"><span>H2 32 / 26</span><div style="font-size:clamp(24px,3vw,32px);line-height:1.15;letter-spacing:-.015em;font-weight:500">An autonomous tomato harvesting robot, published.</div></div>
+    <div class="row"><span>BODY 18</span><div style="font-size:18px;max-width:62ch">I framed the arm as an inverse‑kinematics problem and the field as a segmentation problem. YOLOv11 tells ripe from unripe at 88% in the field; a U‑Net finds the row; a Deep Hough transform turns it into a line to follow.</div></div>
+    <div class="row"><span>LABEL 12 MONO</span><div class="placard"><span><b>2024‑12</b></span><span>YOLOV11</span><span>U‑NET</span><span>RASPBERRY PI</span><span>6‑DOF IK</span><span><b>IJICTDC · 2026‑01</b></span></div></div>
+  </div>
+  <div class="cols">
+    <div class="kv" style="align-content:start"><dt>tracking</dt><dd>−2% above 40 px, 0 below, +8% on mono labels</dd><dt>measure</dt><dd>≤ 62 characters; case‑study column 640 px</dd><dt>never</dt><dd>gradient text, text shadows, all‑caps headlines, typewriter effects</dd></div>
+    <div><h3>Why Geist</h3><p class="muted" style="font-size:15px">It reads as precise engineering at 96 px and stays humane at 13 px. Its mono is a true sibling, so placards and headlines feel cut from one sheet. Free, variable, self‑hostable.</p></div>
+  </div>
+</section>
+
+<!-- 04 ALU -->
+<section id="alu">
+  <div class="sec-head"><span class="label">04 · The robot</span>
+    <div class="intro"><h2>Alu.</h2>
+    <p>Named after his own Instagram line, "Kinda like Alu" (alu is potato in Nepali). A compact, slightly potato‑shaped explorer: satin white shell, one wide frosted visor with two soft blue eyes, short arms, two wide rubber wheels. Recognisable at 24 px. Curious, polite, a little clumsy on arrival.</p></div></div>
+  <div class="floor">
+    <svg viewBox="0 0 1000 460" role="img" aria-label="Orthographic character sheet of Alu: front view, side view and a 24 pixel silhouette test">
+      <defs>
+        <radialGradient id="eye" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="var(--blue-glow)"/><stop offset="1" stop-color="var(--blue)" stop-opacity=".0"/></radialGradient>
+        <linearGradient id="shell" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#E4E9F0"/></linearGradient>
+        <linearGradient id="visor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2A3038"/><stop offset="1" stop-color="#151920"/></linearGradient>
+        <linearGradient id="metalg" x1="0" x2="1"><stop offset="0" stop-color="#AEB7C3"/><stop offset=".5" stop-color="#E7EBF0"/><stop offset="1" stop-color="#AEB7C3"/></linearGradient>
+      </defs>
+      <!-- guides -->
+      <g stroke="var(--line)" stroke-dasharray="2 6"><line x1="60" y1="392" x2="940" y2="392"/><line x1="240" y1="40" x2="240" y2="392"/><line x1="640" y1="40" x2="640" y2="392"/></g>
+      <!-- FRONT VIEW -->
+      <g transform="translate(240 0)">
+        <!-- shadow -->
+        <ellipse cx="0" cy="392" rx="120" ry="10" fill="var(--ink)" opacity=".08"/>
+        <!-- wheels -->
+        <rect x="-118" y="330" width="46" height="62" rx="12" fill="var(--dark-part)"/>
+        <rect x="72" y="330" width="46" height="62" rx="12" fill="var(--dark-part)"/>
+        <rect x="-112" y="352" width="34" height="3" fill="var(--blue)" opacity=".9"/><rect x="78" y="352" width="34" height="3" fill="var(--blue)" opacity=".9"/>
+        <!-- chassis skirt -->
+        <rect x="-96" y="318" width="192" height="26" rx="8" fill="url(#metalg)" stroke="var(--metal)"/>
+        <!-- body -->
+        <path d="M-100 250 C -100 180, -60 158, 0 158 C 60 158, 100 180, 100 250 L 100 300 C 100 322, 80 330, 60 330 L -60 330 C -80 330, -100 322, -100 300 Z" fill="url(#shell)" stroke="var(--metal)" stroke-width="1.5"/>
+        <line x1="-100" y1="262" x2="100" y2="262" stroke="var(--line)"/>
+        <!-- chest monogram (debossed) -->
+        <circle cx="0" cy="292" r="12" fill="none" stroke="var(--metal)" stroke-width="1.5"/>
+        <path d="M-5 297 L-5 287 L2 295 L2 287 L7 287 M2 292 L7 297" fill="none" stroke="var(--metal)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- arms -->
+        <g stroke="var(--metal)" stroke-width="1.5">
+          <rect x="-138" y="200" width="30" height="58" rx="14" fill="url(#shell)"/><circle cx="-123" cy="262" r="9" fill="var(--dark-part)" stroke="none"/><rect x="-136" y="266" width="26" height="40" rx="12" fill="url(#shell)"/>
+          <rect x="108" y="200" width="30" height="58" rx="14" fill="url(#shell)"/><circle cx="123" cy="262" r="9" fill="var(--dark-part)" stroke="none"/><rect x="110" y="266" width="26" height="40" rx="12" fill="url(#shell)"/>
+        </g>
+        <!-- collar -->
+        <rect x="-64" y="146" width="128" height="14" rx="7" fill="url(#metalg)" stroke="var(--metal)"/>
+        <rect x="-10" y="130" width="20" height="18" fill="var(--dark-part)"/>
+        <!-- head -->
+        <rect x="-92" y="52" width="184" height="86" rx="34" fill="url(#shell)" stroke="var(--metal)" stroke-width="1.5"/>
+        <rect x="-74" y="64" width="148" height="52" rx="22" fill="url(#visor)"/>
+        <circle cx="-34" cy="90" r="16" fill="url(#eye)"/><circle cx="34" cy="90" r="16" fill="url(#eye)"/>
+        <circle cx="-34" cy="90" r="6" fill="#fff"/><circle cx="34" cy="90" r="6" fill="#fff"/>
+        <!-- antenna -->
+        <line x1="70" y1="52" x2="82" y2="34" stroke="var(--metal)" stroke-width="3" stroke-linecap="round"/><circle cx="84" cy="31" r="4" fill="var(--blue)"/>
+        <text x="0" y="430" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--ink-2)" letter-spacing="1">FRONT · H 0.9 m · W 0.62 m</text>
+      </g>
+      <!-- SIDE VIEW -->
+      <g transform="translate(640 0)">
+        <ellipse cx="0" cy="392" rx="120" ry="10" fill="var(--ink)" opacity=".08"/>
+        <!-- rear caster -->
+        <circle cx="-92" cy="376" r="14" fill="var(--dark-part)"/>
+        <!-- chassis -->
+        <rect x="-110" y="318" width="200" height="26" rx="8" fill="url(#metalg)" stroke="var(--metal)"/>
+        <!-- body (deeper than tall: potato) -->
+        <path d="M-112 262 C -112 186, -70 158, 10 158 C 84 158, 118 190, 118 254 L 118 300 C 118 322, 98 330, 78 330 L -80 330 C -100 330, -112 322, -112 300 Z" fill="url(#shell)" stroke="var(--metal)" stroke-width="1.5"/>
+        <line x1="-112" y1="262" x2="118" y2="262" stroke="var(--line)"/>
+        <!-- back light strip -->
+        <rect x="-106" y="200" width="4" height="60" rx="2" fill="var(--blue)" opacity=".9"/>
+        <!-- arm (near side) -->
+        <g stroke="var(--metal)" stroke-width="1.5"><rect x="40" y="200" width="30" height="58" rx="14" fill="url(#shell)"/><circle cx="55" cy="262" r="9" fill="var(--dark-part)" stroke="none"/><rect x="46" y="266" width="26" height="40" rx="12" fill="url(#shell)"/></g>
+        <!-- wheel -->
+        <circle cx="40" cy="358" r="40" fill="var(--dark-part)"/><circle cx="40" cy="358" r="24" fill="var(--surface-2)" stroke="var(--metal)"/><circle cx="40" cy="358" r="14" fill="none" stroke="var(--blue)" stroke-width="3"/>
+        <!-- collar + neck -->
+        <rect x="-54" y="146" width="118" height="14" rx="7" fill="url(#metalg)" stroke="var(--metal)"/>
+        <rect x="-4" y="130" width="20" height="18" fill="var(--dark-part)"/>
+        <!-- head, slight forward tilt -->
+        <g transform="rotate(-6 6 95)">
+          <rect x="-70" y="52" width="160" height="86" rx="34" fill="url(#shell)" stroke="var(--metal)" stroke-width="1.5"/>
+          <path d="M20 64 L74 64 C 84 64, 90 74, 90 90 C 90 106, 84 116, 74 116 L 20 116 Z" fill="url(#visor)"/>
+          <circle cx="62" cy="90" r="16" fill="url(#eye)"/><circle cx="62" cy="90" r="6" fill="#fff"/>
+          <line x1="-52" y1="56" x2="-66" y2="38" stroke="var(--metal)" stroke-width="3" stroke-linecap="round"/><circle cx="-68" cy="35" r="4" fill="var(--blue)"/>
+        </g>
+        <text x="0" y="430" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="var(--ink-2)" letter-spacing="1">SIDE · D 0.7 m · HEAD YAW ±70° · PITCH ±25°</text>
+      </g>
+      <!-- silhouette test -->
+      <g transform="translate(900 300)">
+        <rect x="-32" y="-32" width="64" height="64" fill="none" stroke="var(--line)"/>
+        <g transform="scale(.11) translate(0 -160)" fill="var(--ink)">
+          <rect x="-92" y="52" width="184" height="86" rx="34"/><path d="M-100 250 C -100 180, -60 158, 0 158 C 60 158, 100 180, 100 250 L 100 330 L -100 330 Z"/><rect x="-118" y="330" width="46" height="62" rx="12"/><rect x="72" y="330" width="46" height="62" rx="12"/><rect x="-138" y="200" width="30" height="100" rx="14"/><rect x="108" y="200" width="30" height="100" rx="14"/>
+        </g>
+        <text x="0" y="52" text-anchor="middle" font-family="var(--mono)" font-size="10" fill="var(--ink-2)" letter-spacing="1">24 PX TEST</text>
+      </g>
+      <!-- callouts -->
+      <g font-family="var(--mono)" font-size="10.5" fill="var(--ink-2)" letter-spacing="1">
+        <text x="60" y="76">FROSTED VISOR, TWO SOFT EYES</text>
+        <text x="60" y="152">BRUSHED‑METAL COLLAR</text>
+        <text x="60" y="296">DEBOSSED MONOGRAM, NEVER LIT</text>
+        <text x="60" y="352">WIDE RUBBER TREADS · BLUE HUB RING</text>
+        <text x="790" y="230">BACK LIGHT STRIP = STATE</text>
+        <text x="790" y="380">REAR CASTER</text>
+      </g>
+    </svg>
+    <span class="label cap">Character sheet v0.1 · proportions head : body : base ≈ 1 : 1.6 : 0.7</span>
+  </div>
+  <div class="cols">
+    <div><h3>Personality in motion</h3>
+      <ul class="plain">
+        <li>Head leads, body follows about 120 ms later.</li>
+        <li>Never blocks content; rolls aside when a case study opens.</li>
+        <li>One wheel slip on arrival. A small chest‑up after a project reveal.</li>
+        <li>Idle: breathing scale ±1.5%, an occasional look‑around. No speech, ever.</li>
+      </ul></div>
+    <div><h3>Rig contract</h3>
+      <p class="muted" style="font-size:15px">Bones: head, neck, arm_L_1..3, arm_R_1..3, wheel_L, wheel_R, antenna. Clips: idle, look, roll, turn, wave, point, present, enter, celebrate, sit. The R3F placeholder uses these names now, so the Blender model drops in later without touching animation code.</p></div>
+    <div><h3>Not</h3>
+      <ul class="plain">
+        <li>Binocular eyes on a neck (WALL‑E).</li>
+        <li>A smooth egg with a face screen (EVE).</li>
+        <li>Tank tracks under a cube. Neon. A chat bubble.</li>
+      </ul></div>
+  </div>
+</section>
+
+<!-- 05 PORTAL -->
+<section id="portal">
+  <div class="sec-head"><span class="label">05 · The door</span>
+    <div class="intro"><h2>A frame that light comes through.</h2>
+    <p>A tall thin rectangle, 4 m by 2.2 m, in the same satin white as Alu's shell, corners chamfered at 45° to echo the monogram's stroke. Inside it, frosted glass that clears from the centre as Alu approaches. The light is behind it, not in it. The same profile returns at every chapter change and, at 1.6 m, as the door of every case study.</p></div></div>
+  <div class="two">
+    <div class="floor">
+      <svg viewBox="0 0 520 560" role="img" aria-label="Front elevation of the portal with dimensions">
+        <defs>
+          <radialGradient id="shaft" cx=".5" cy="0" r="1"><stop offset="0" stop-color="var(--blue-glow)" stop-opacity=".55"/><stop offset=".6" stop-color="var(--blue-glow)" stop-opacity="0"/></radialGradient>
+          <linearGradient id="pane" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset="1" stop-color="var(--blue-wash)" stop-opacity=".95"/></linearGradient>
+        </defs>
+        <line x1="20" y1="500" x2="500" y2="500" stroke="var(--line)"/>
+        <ellipse cx="260" cy="512" rx="150" ry="40" fill="url(#shaft)"/>
+        <!-- frame outer with chamfers -->
+        <path d="M150 60 L 370 60 L 384 74 L 384 500 L 136 500 L 136 74 Z" fill="var(--surface)" stroke="var(--ink)" stroke-width="2"/>
+        <path d="M164 82 L 356 82 L 356 500 L 164 500 Z" fill="url(#pane)" stroke="var(--metal)"/>
+        <!-- cleared circle in glass -->
+        <circle cx="260" cy="330" r="60" fill="var(--bg)" opacity=".9"/>
+        <circle cx="260" cy="330" r="60" fill="none" stroke="var(--blue-glow)" opacity=".6"/>
+        <!-- alu scale figure -->
+        <g transform="translate(90 500) scale(.28)" fill="var(--ink)" opacity=".55">
+          <rect x="-92" y="-340" width="184" height="86" rx="34"/><path d="M-100 -142 C -100 -212, -60 -234, 0 -234 C 60 -234, 100 -212, 100 -142 L 100 -62 L -100 -62 Z"/><rect x="-118" y="-62" width="46" height="62" rx="12"/><rect x="72" y="-62" width="46" height="62" rx="12"/>
+        </g>
+        <!-- dims -->
+        <g stroke="var(--ink-2)" font-family="var(--mono)" font-size="10.5" fill="var(--ink-2)" letter-spacing="1">
+          <line x1="420" y1="60" x2="420" y2="500"/><line x1="414" y1="60" x2="426" y2="60"/><line x1="414" y1="500" x2="426" y2="500"/>
+          <text x="432" y="284" stroke="none">4.0 m</text>
+          <line x1="136" y1="530" x2="384" y2="530"/><line x1="136" y1="524" x2="136" y2="536"/><line x1="384" y1="524" x2="384" y2="536"/>
+          <text x="232" y="552" stroke="none">2.2 m</text>
+          <line x1="136" y1="40" x2="164" y2="40"/><text x="118" y="30" stroke="none">12 cm</text>
+          <text x="36" y="440" stroke="none">ALU</text>
+        </g>
+      </svg>
+      <span class="label cap">Elevation · chamfer 45° · light shaft on floor, haze behind</span>
+    </div>
+    <div style="display:grid;gap:22px;align-content:start">
+      <div class="kv"><dt>frame</dt><dd>satin white, 12 cm section, one hairline seam</dd><dt>pane</dt><dd>frosted glass, transmission material, clears radially on approach</dd><dt>light</dt><dd>cool volumetric shaft from behind onto the floor; blue lives only in the light</dd><dt>haze</dt><dd>soft atmospheric depth behind; never fog in front of Alu</dd><dt>reuse</dt><dd>4.0 m at Arrival and chapter changes; 1.6 m at every case study</dd><dt>sound (off)</dt><dd>one low glass tone when the pane clears</dd></div>
+      <div><h3>Threshold beat</h3><p class="muted" style="font-size:15px">Alu appears, looks around, notices the door, rolls up, glances back at the camera once, the glass clears, the camera follows through. 2.4 seconds, driven by scroll, always skippable. It is the only moment that asks the visitor to wait.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 06 WORLD -->
+<section id="world">
+  <div class="sec-head"><span class="label">06 · The journey</span>
+    <div class="intro"><h2>One floor, seven chapters, no rooms.</h2>
+    <p>A continuous white exhibition floor with a long axis. Scroll moves the camera and Alu along it. The chapters are places on the floor, each deep‑linkable, each with a plain HTML twin.</p></div></div>
+  <div class="floor">
+    <svg viewBox="0 0 1000 340" role="img" aria-label="Plan of the journey: arrival, threshold, origins, three benches, crossroads, record wall, signal balcony">
+      <defs><linearGradient id="dim" x1="0" x2="1"><stop offset="0" stop-color="var(--surface)"/><stop offset="1" stop-color="var(--blue-wash)"/></linearGradient></defs>
+      <rect x="30" y="80" width="940" height="180" fill="url(#dim)" stroke="var(--line)"/>
+      <!-- paths -->
+      <path d="M60 170 L 200 170 L 260 170 C 330 170, 340 110, 420 110 L 620 110 C 700 110, 700 170, 760 170 L 940 170" fill="none" stroke="var(--blue)" stroke-width="1.5" opacity=".9"/>
+      <path d="M60 170 L 940 170" fill="none" stroke="var(--blue)" stroke-width="1.5" opacity=".9"/>
+      <path d="M60 170 L 200 170 L 260 170 C 330 170, 340 230, 420 230 L 620 230 C 700 230, 700 170, 760 170 L 940 170" fill="none" stroke="var(--blue)" stroke-width="1.5" opacity=".9"/>
+      <!-- portal -->
+      <rect x="196" y="140" width="8" height="60" fill="var(--ink)"/>
+      <!-- benches -->
+      <g fill="var(--surface)" stroke="var(--ink)"><rect x="430" y="96" width="180" height="10"/><rect x="430" y="176" width="180" height="10"/><rect x="430" y="236" width="180" height="10"/></g>
+      <!-- artifacts -->
+      <g fill="var(--ink)"><circle cx="460" cy="101" r="3"/><circle cx="520" cy="101" r="3"/><circle cx="580" cy="101" r="3"/><circle cx="460" cy="181" r="3"/><circle cx="520" cy="181" r="3"/><circle cx="580" cy="181" r="3"/><circle cx="460" cy="241" r="3"/><circle cx="520" cy="241" r="3"/><circle cx="580" cy="241" r="3"/></g>
+      <!-- crossroads case -->
+      <rect x="772" y="150" width="30" height="40" fill="none" stroke="var(--ink)"/><rect x="778" y="156" width="18" height="28" fill="var(--blue-wash)"/>
+      <!-- record wall -->
+      <rect x="840" y="86" width="60" height="6" fill="var(--ink)"/>
+      <g fill="var(--surface)" stroke="var(--ink)"><rect x="845" y="96" width="8" height="8"/><rect x="857" y="96" width="8" height="8"/><rect x="869" y="96" width="8" height="8"/><rect x="881" y="96" width="8" height="8"/></g>
+      <!-- balcony -->
+      <path d="M930 80 L 970 80 L 970 260 L 930 260" fill="var(--dark-part)" opacity=".9"/>
+      <!-- alu dot -->
+      <circle cx="120" cy="170" r="6" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="120" cy="170" r="2" fill="var(--blue)"/>
+      <!-- camera arrow -->
+      <path d="M60 300 L 940 300" stroke="var(--ink-2)" stroke-width="1"/><path d="M932 295 L 942 300 L 932 305" fill="none" stroke="var(--ink-2)"/>
+      <g font-family="var(--mono)" font-size="10.5" fill="var(--ink-2)" letter-spacing="1">
+        <text x="60" y="70">01 ARRIVAL</text><text x="180" y="70">02 THRESHOLD</text><text x="280" y="70">03 ORIGINS</text><text x="430" y="70">04 BENCHES</text><text x="740" y="70">05 CROSSROADS</text><text x="836" y="70">06 RECORD</text><text x="922" y="70">07</text>
+        <text x="620" y="101">ROBOTICS</text><text x="620" y="181">SOFTWARE</text><text x="620" y="241">AI</text>
+        <text x="60" y="322">SCROLL → CAMERA DOLLY + ALU ROLL · SIGNAL BALCONY DIMS TO DARK MODE</text>
+      </g>
+    </svg>
+    <span class="label cap">Plan · 07 Signal is the dark balcony at the far end</span>
+  </div>
+  <div class="chapters">
+    <div class="ch"><span class="n">01</span><h3>Arrival</h3><p>White void, Alu, the door. No words for two seconds. Then <b>"Ashish Gupta builds machines that think."</b> and a mono <b>scroll to enter</b>.</p></div>
+    <div class="ch"><span class="n">02</span><h3>Threshold</h3><p>Scroll drives Alu to the door; the glass clears; the camera follows through. Skippable with any key or tap.</p></div>
+    <div class="ch"><span class="n">03</span><h3>Origins</h3><p>Three light paths start at one point on the floor, labelled <b>Class 9</b>. Three small artifacts: a C textbook, a breadboard, a notebook. Three first‑person sentences. Diploma years shown as a widening of the software path, not a step up.</p></div>
+    <div class="ch"><span class="n">04</span><h3>Benches</h3><p>The paths spread into three long white tables. <b>Robotics</b> (matte, metal): TomatoBot v2, JeevI quadruped, the face‑tracking robot, the rescue vehicle. <b>Software</b> (hairline grids): ArthaVidhi, RestHat, RedSoil, WadaConnect, Jiffy. <b>AI</b> (frosted glass, light): DocLipi, Recyclo, DementiaBot and a lab‑bench wall of experiments. Hover lifts an artifact 6 cm and shows its placard. Click opens its door.</p></div>
+    <div class="ch"><span class="n">05</span><h3>Crossroads</h3><p>The paths braid into one. Here live the projects that need all three: <b>TomatoBot</b> (the published paper sits in a glass case) and <b>Phulbari</b> (CNN + ESP32 irrigation).</p></div>
+    <div class="ch"><span class="n">06</span><h3>Record</h3><p>A wall with a timeline etched into the floor, 2019 → 2027: seven placements, the paper, Kathmandu University, the diploma, Haitomns Groups, EncodeX. Alu points at now.</p></div>
+    <div class="ch"><span class="n">07</span><h3>Signal</h3><p>The floor ends at a low balcony and the building goes to night. Alu sits. Email, phone, GitHub, LinkedIn as four mono lines; a minimal form; Alu waves on send.</p></div>
+  </div>
+</section>
+
+<!-- 07 SURFACES -->
+<section id="surfaces">
+  <div class="sec-head"><span class="label">07 · Surfaces</span>
+    <div class="intro"><h2>The whole interface fits in four corners.</h2>
+    <p>Chrome is placed once and never moves. A case study is one white sheet. Everything else is the world.</p></div></div>
+  <div class="two">
+    <div style="display:grid;gap:10px">
+      <div class="frame" aria-label="Wireframe of the screen chrome positions">
+        <span class="c tl">◯ monogram</span><span class="c tr">menu · theme · sound</span>
+        <div class="shaft"></div><div class="door"></div>
+        <svg class="robot" viewBox="0 0 100 130" aria-hidden="true"><rect x="10" y="4" width="80" height="34" rx="16" fill="var(--surface)" stroke="var(--ink)"/><circle cx="36" cy="21" r="5" fill="var(--blue)"/><circle cx="64" cy="21" r="5" fill="var(--blue)"/><path d="M8 80 C8 50 30 44 50 44 C70 44 92 50 92 80 L92 108 L8 108Z" fill="var(--surface)" stroke="var(--ink)"/><rect x="2" y="108" width="24" height="20" rx="6" fill="var(--dark-part)"/><rect x="74" y="108" width="24" height="20" rx="6" fill="var(--dark-part)"/></svg>
+        <span class="c bl"><span class="stroke"></span><span>02 · THRESHOLD</span></span>
+        <span class="c bc">scroll to enter</span>
+      </div>
+      <span class="label">Chrome · nothing in the bottom‑right, ever</span>
+    </div>
+    <div style="display:grid;gap:10px">
+      <div class="sheetmock" aria-label="Wireframe of the case study sheet sliding over a dimmed scene">
+        <div class="scene"></div>
+        <div class="sheet"><i class="t"></i><i class="s"></i><i class="img"></i><i></i><i class="s"></i><i></i><i class="m"></i><i class="s"></i></div>
+      </div>
+      <span class="label">Case study · one sheet from the right, scene dims 40%, Esc closes</span>
+    </div>
+  </div>
+  <div class="cols">
+    <div><h3>Case‑study order, always</h3><p class="muted" style="font-size:15px">Title → one‑sentence problem → 3–5 images or video → What I built → Decisions → Stack (mono line) → Result → Links. Alu idles beside the door.</p></div>
+    <div><h3>Fallback, always</h3><p class="muted" style="font-size:15px">The menu opens a plain, semantic, scrolling version of the entire site built from the same content. Reduced‑motion visitors and <span class="label" style="text-transform:none;color:var(--ink)">?flat=1</span> land there by default.</p></div>
+    <div><h3>Motion, always</h3><p class="muted" style="font-size:15px">Damped scroll scalar, dolly and pan only, one camera move at a time, nothing over 900 ms except the 2.4 s Threshold. If the visitor outruns Alu, he catches up during a cut, never on screen.</p></div>
+  </div>
+</section>
+
+<!-- 08 MATERIALS -->
+<section id="materials">
+  <div class="sec-head"><span class="label">08 · Materials</span>
+    <div class="intro"><h2>Five materials, all of them touchable.</h2>
+    <p>Everything in the world, Alu included, is built from these. Nothing is fully glossy. Glow is a light source, never a coat of paint.</p></div></div>
+  <div class="mats">
+    <div class="mat m-white"><i></i><b>Satin white</b><small>shell, frame, floor · roughness .45</small></div>
+    <div class="mat m-metal"><i></i><b>Brushed metal</b><small>collar, rails, chassis · metalness .9</small></div>
+    <div class="mat m-glass"><i></i><b>Frosted glass</b><small>visor, door pane, AI bench · transmission</small></div>
+    <div class="mat m-rubber"><i></i><b>Dark rubber</b><small>wheels, joints, housings · roughness .9</small></div>
+    <div class="mat m-emis"><i></i><b>Blue emissive</b><small>eyes, hub rings, light strip · bloom kept low</small></div>
+  </div>
+</section>
+
+<!-- 09 GUARDRAILS -->
+<section id="guardrails">
+  <div class="sec-head"><span class="label">09 · Guardrails</span>
+    <div class="intro"><h2>What this site will not do.</h2></div></div>
+  <div class="cols">
+    <ul class="plain"><li>No skill percentage bars, no badge walls (GitHub already has one).</li><li>No pastel domain colours, no gradients larger than a shadow.</li><li>No card grids with drop shadows; artifacts sit on benches.</li><li>No "Hey 👋", no typewriter, no particles without a light source.</li></ul>
+    <ul class="plain"><li>No chat bubble on Alu. He does not talk.</li><li>No software → AI → robotics staircase. Paths, not steps.</li><li>No invented facts; every claim traces to <span class="label" style="text-transform:none;color:var(--ink)">docs/PROFILE.md</span>.</li><li>No moment the visitor cannot skip, leave, or read as plain HTML.</li></ul>
+  </div>
+</section>
+
+<!-- 10 QUESTIONS -->
+<section id="questions" style="border-bottom:0">
+  <div class="sec-head"><span class="label">10 · Open questions</span>
+    <div class="intro"><h2>Six answers unlock the build.</h2></div></div>
+  <div class="q">
+    <div>Is the robot's name <b>Alu</b>? (Fallbacks: Bhai, Tuk, or a model number like HB‑01.)</div>
+    <div>Which order for the identity line: Robotics · Software · AI, or Software · AI · Robotics?</div>
+    <div>Photos or video of TomatoBot v2, the JeevI hardware, the rescue vehicle, the face‑tracking robot, the PCB?</div>
+    <div>WadaConnect and DementiaBot: any screenshots or public links?</div>
+    <div>May client names appear (the blood bank using RedSoil, the restaurants on RestHat)?</div>
+    <div>Stay on GitHub Pages (with a SPA fallback) or move to Cloudflare Pages for heavier 3D assets?</div>
+  </div>
+</section>
+
+<footer>
+  <span class="label">Companion docs · README.md · docs/PROFILE.md · docs/DESIGN.md · docs/PLAN.md</span>
+  <span class="label">Next: M0 foundation, then the Arrival scene</span>
+</footer>
+</div>

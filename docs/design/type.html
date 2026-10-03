@@ -1,0 +1,209 @@
+<title>Type for Alu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Manrope:wght@400;500;600&family=Instrument+Sans:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one column; the same two mock screens re-set in each candidate face; palette = Ashish's five-step water ramp. */
+:root{
+  --navy:#03045E; --ocean:#0077B6; --cyan:#00B4D8; --sky:#90E0EF; --ice:#CAF0F8;
+  --bg:#F7FCFE; --surface:#FFFFFF; --surface-2:#E9F7FB; --line:#CFE8F0;
+  --ink:#03045E; --ink-2:#4A5B7A; --blue:#00B4D8; --blue-deep:#0077B6; --glow:#90E0EF; --wash:#CAF0F8;
+  --f-geist:"Geist",system-ui,sans-serif; --f-manrope:"Manrope",system-ui,sans-serif; --f-instr:"Instrument Sans",system-ui,sans-serif; --f-jak:"Plus Jakarta Sans",system-ui,sans-serif;
+  --m-geist:"Geist Mono",ui-monospace,Menlo,Consolas,monospace; --m-jb:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace; --m-plex:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --sans:var(--f-geist); --mono:var(--m-geist);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#03045E;--surface:#0A1070;--surface-2:#121A80;--line:#28338F;--ink:#F2FBFD;--ink-2:#A9C9D6;--blue-deep:#48C6E6;--wash:#0E2F6E;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#03045E;--surface:#0A1070;--surface-2:#121A80;--line:#28338F;--ink:#F2FBFD;--ink-2:#A9C9D6;--blue-deep:#48C6E6;--wash:#0E2F6E;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased;padding-inline:clamp(16px,4vw,48px);padding-block:0 96px}
+.wrap{max-width:1040px;margin:0 auto}
+h1,h2,h3{font-weight:500;letter-spacing:-.02em;text-wrap:balance;margin:0}
+h1{font-size:clamp(40px,7vw,84px);line-height:1;letter-spacing:-.03em}
+h2{font-size:clamp(24px,3.2vw,34px);line-height:1.15}
+h3{font-size:18px}
+p{margin:0;max-width:62ch}
+.label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);font-weight:500}
+.muted{color:var(--ink-2)}
+header{padding-block:56px 36px;border-bottom:1px solid var(--line);display:grid;gap:20px}
+.topline{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+section{padding-block:56px;border-bottom:1px solid var(--line);display:grid;gap:26px}
+.sec-head{display:grid;grid-template-columns:120px 1fr;gap:24px;align-items:start}
+.sec-head .label{padding-top:8px}
+.sec-head .intro{display:grid;gap:12px}
+/* palette strip */
+.ramp{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--line);overflow:hidden}
+.ramp div{aspect-ratio:1.6;display:flex;align-items:flex-end;padding:10px;font-family:var(--mono);font-size:11px;letter-spacing:.06em}
+.ramp .n{background:#03045E;color:#CAF0F8}.ramp .o{background:#0077B6;color:#fff}.ramp .c{background:#00B4D8;color:#03045E}.ramp .s{background:#90E0EF;color:#03045E}.ramp .i{background:#CAF0F8;color:#03045E}
+.roles{display:grid;grid-template-columns:repeat(5,1fr);gap:0 10px;font-size:13px;color:var(--ink-2)}
+.roles div{min-width:0}.roles b{display:block;color:var(--ink);font-weight:500}
+@media (max-width:640px){.ramp div{aspect-ratio:1;padding:6px;font-size:9px}.roles{grid-template-columns:1fr 1fr;gap:10px}}
+/* switcher */
+.switch{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.switch button{font:500 13px/1 var(--f-geist);letter-spacing:.01em;padding:10px 14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;border-radius:999px}
+.switch button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.switch button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.switch .sep{width:1px;height:22px;background:var(--line);margin-inline:6px}
+.stage{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media (max-width:820px){.stage{grid-template-columns:1fr}}
+.screen{aspect-ratio:16/10;border:1px solid var(--line);position:relative;overflow:hidden;font-family:var(--sans)}
+.screen.light{background:#F7FCFE;color:#03045E}
+.screen.dark{background:#03045E;color:#F2FBFD}
+.screen .chrome{position:absolute;inset:0;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;opacity:.75}
+.screen .chrome span{position:absolute}
+.screen .tl{top:14px;left:16px}.screen .tr{top:14px;right:16px}.screen .bl{bottom:14px;left:16px}.screen .bc{bottom:14px;left:50%;transform:translateX(-50%)}
+.screen .door{position:absolute;left:50%;top:14%;transform:translateX(-50%);width:15%;height:52%;border:2px solid currentColor;opacity:.9}
+.screen.light .door::after,.screen.dark .door::after{content:"";position:absolute;inset:2px;background:linear-gradient(to bottom,rgba(144,224,239,.55),rgba(202,240,248,.05))}
+.screen .shaft{position:absolute;left:50%;top:60%;transform:translateX(-50%);width:34%;height:16%;background:radial-gradient(ellipse at top,rgba(0,180,216,.35),transparent 70%)}
+.screen .alu{position:absolute;left:39%;top:48%;width:6.5%}
+.screen .hero{position:absolute;left:8%;right:8%;bottom:19%;display:grid;gap:6px}
+.screen .hero .h{font-size:clamp(18px,3.1vw,34px);line-height:1.02;letter-spacing:-.03em;font-weight:500;text-wrap:balance}
+.screen .hero .s{font-size:clamp(10px,1.2vw,13px);opacity:.75;max-width:40ch}
+.sheet{border:1px solid var(--line);background:var(--surface);padding:clamp(18px,3vw,30px);display:grid;gap:12px;font-family:var(--sans)}
+.sheet .t{font-size:clamp(26px,3.4vw,38px);line-height:1.05;letter-spacing:-.025em;font-weight:500}
+.sheet .p{font-size:16px;line-height:1.55;max-width:60ch}
+.sheet .plac{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);display:flex;gap:14px;flex-wrap:wrap}
+.sheet .plac b{color:var(--ink);font-weight:500}
+.sheet h4{margin:0;font-size:13px;letter-spacing:.02em;text-transform:uppercase;color:var(--ink-2);font-weight:500}
+.sheet a{color:var(--blue-deep);text-decoration:none;border-bottom:1px solid var(--line)}
+/* candidate grid */
+.cands{display:grid;gap:0;border-top:1px solid var(--line)}
+.cand{display:grid;grid-template-columns:200px 1fr;gap:24px;padding-block:28px;border-bottom:1px solid var(--line)}
+@media (max-width:760px){.cand{grid-template-columns:1fr;gap:14px}}
+.cand .meta{display:grid;gap:8px;align-content:start;font-size:14px;color:var(--ink-2)}
+.cand .meta b{color:var(--ink);font-weight:500;font-size:16px}
+.cand .meta .tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--blue-deep)}
+.cand .spec{display:grid;gap:12px;min-width:0}
+.cand .big{font-size:clamp(30px,5vw,60px);line-height:1;letter-spacing:-.03em;font-weight:500}
+.cand .mid{font-size:22px;letter-spacing:-.015em;font-weight:500}
+.cand .body{font-size:16.5px;max-width:60ch}
+.cand .caps{font-size:13px;color:var(--ink-2)}
+.cand .caps span{margin-right:14px}
+.f-geist{font-family:var(--f-geist)}.f-manrope{font-family:var(--f-manrope)}.f-instr{font-family:var(--f-instr)}.f-jak{font-family:var(--f-jak)}
+.mono-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+.mono-row>div{border:1px solid var(--line);padding:18px;display:grid;gap:10px;min-width:0;background:var(--surface)}
+.mono-row .ex{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);line-height:1.8;overflow-wrap:anywhere}
+.mono-row .ex b{color:var(--ink);font-weight:500}
+.mono-row .code{font-size:13px;color:var(--ink);white-space:pre;overflow-x:auto}
+.m-geist{font-family:var(--m-geist)}.m-jb{font-family:var(--m-jb)}.m-plex{font-family:var(--m-plex)}
+.verdict{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:26px}
+.verdict>div{min-width:0;display:grid;gap:8px;align-content:start}
+.verdict p{font-size:15.5px;color:var(--ink-2)}
+ul.plain{list-style:none;margin:0;padding:0;display:grid;gap:8px;font-size:15.5px}
+ul.plain li{padding-left:18px;position:relative}
+ul.plain li::before{content:"";position:absolute;left:0;top:.68em;width:8px;height:1px;background:var(--ink-2)}
+footer{padding-top:28px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+@media (prefers-reduced-motion:no-preference){.screen,.sheet,.cand{transition:font-family .001s}}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="topline"><span class="label">Type study · v0.1 · 2026‑09‑30</span><span class="label">haitomns.dev · Ashish Gupta</span></div>
+  <h1 id="h1">Type for Alu.</h1>
+  <p class="muted" style="max-width:60ch">Four candidate families, each set in the same two screens with your palette. Switch faces with the buttons; the first screen and the case‑study sheet re‑set live so the comparison is fair.</p>
+</header>
+
+<section id="palette">
+  <div class="sec-head"><span class="label">01 · Your palette</span>
+    <div class="intro"><h2>One water ramp, five jobs.</h2>
+    <p>These five stay exactly as you chose them. Each one gets a single job so the site never looks like a gradient poster. Text on white uses ocean, never cyan; cyan is light, so it belongs to Alu's eyes and the door.</p></div></div>
+  <div class="ramp" aria-label="Palette: 03045E navy, 0077B6 ocean, 00B4D8 cyan, 90E0EF sky, CAF0F8 ice"><div class="n">03045E</div><div class="o">0077B6</div><div class="c">00B4D8</div><div class="s">90E0EF</div><div class="i">CAF0F8</div></div>
+  <div class="roles"><div><b>Navy</b>ink on white; the night ground in dark mode; Alu's rubber</div><div><b>Ocean</b>links and pressed states (4.6:1 on white)</div><div><b>Cyan</b>the power blue: eyes, hub rings, portal light, focus</div><div><b>Sky</b>glow and bloom halos, 20–35% opacity</div><div><b>Ice</b>wash behind chosen artifacts; the haze through the door</div></div>
+</section>
+
+<section id="live">
+  <div class="sec-head"><span class="label">02 · Live comparison</span>
+    <div class="intro"><h2>Same screens, different voice.</h2>
+    <p>Left: the arrival screen in light mode. Right: the same moment at night. Below: the top of a case‑study sheet, where the body face has to carry dense engineering prose.</p></div></div>
+  <div class="switch" role="group" aria-label="Choose a typeface">
+    <button type="button" data-font="geist" aria-pressed="true" id="b-geist">Geist</button>
+    <button type="button" data-font="manrope" aria-pressed="false" id="b-manrope">Manrope</button>
+    <button type="button" data-font="instr" aria-pressed="false" id="b-instr">Instrument Sans</button>
+    <button type="button" data-font="jak" aria-pressed="false" id="b-jak">Plus Jakarta Sans</button>
+    <span class="sep" aria-hidden="true"></span>
+    <span class="label">mono:</span>
+    <button type="button" data-mono="geist" aria-pressed="true" id="m-geist">Geist Mono</button>
+    <button type="button" data-mono="jb" aria-pressed="false" id="m-jb">JetBrains Mono</button>
+    <button type="button" data-mono="plex" aria-pressed="false" id="m-plex">IBM Plex Mono</button>
+  </div>
+  <div class="stage">
+    <div class="screen light" aria-label="Arrival screen, light mode">
+      <div class="chrome"><span class="tl">◯</span><span class="tr">menu · theme · sound</span><span class="bl">01 · arrival</span><span class="bc">scroll to enter</span></div>
+      <div class="shaft"></div><div class="door"></div>
+      <svg class="alu" viewBox="0 0 100 130" aria-hidden="true"><rect x="10" y="4" width="80" height="34" rx="16" fill="#fff" stroke="#03045E"/><circle cx="36" cy="21" r="5" fill="#00B4D8"/><circle cx="64" cy="21" r="5" fill="#00B4D8"/><path d="M8 80 C8 50 30 44 50 44 C70 44 92 50 92 80 L92 108 L8 108Z" fill="#fff" stroke="#03045E"/><rect x="2" y="108" width="24" height="20" rx="6" fill="#03045E"/><rect x="74" y="108" width="24" height="20" rx="6" fill="#03045E"/></svg>
+      <div class="hero"><div class="h">Ashish Gupta builds machines that think.</div><div class="s">Robotics, software and AI, grown together since Class 9, from Birgunj, Nepal.</div></div>
+    </div>
+    <div class="screen dark" aria-label="Arrival screen, dark mode">
+      <div class="chrome"><span class="tl">◯</span><span class="tr">menu · theme · sound</span><span class="bl">01 · arrival</span><span class="bc">scroll to enter</span></div>
+      <div class="shaft"></div><div class="door"></div>
+      <svg class="alu" viewBox="0 0 100 130" aria-hidden="true"><rect x="10" y="4" width="80" height="34" rx="16" fill="#F2FBFD" stroke="#90E0EF"/><circle cx="36" cy="21" r="5" fill="#00B4D8"/><circle cx="64" cy="21" r="5" fill="#00B4D8"/><path d="M8 80 C8 50 30 44 50 44 C70 44 92 50 92 80 L92 108 L8 108Z" fill="#F2FBFD" stroke="#90E0EF"/><rect x="2" y="108" width="24" height="20" rx="6" fill="#020331"/><rect x="74" y="108" width="24" height="20" rx="6" fill="#020331"/></svg>
+      <div class="hero"><div class="h">Ashish Gupta builds machines that think.</div><div class="s">Robotics, software and AI, grown together since Class 9, from Birgunj, Nepal.</div></div>
+    </div>
+  </div>
+  <div class="sheet" aria-label="Case study sheet excerpt">
+    <div class="plac"><span><b>05 · Crossroads</b></span><span>2024‑12</span><span>Robotics · AI · Software</span></div>
+    <div class="t">TomatoBot v2</div>
+    <p class="p">An autonomous harvesting robot for tomato farms, later published in IJICTDC. I framed the arm as an inverse‑kinematics problem and the field as a segmentation problem: YOLOv11 tells ripe from unripe at 88% in real fields, a U‑Net finds the row, and a Deep Hough transform turns it into one line to follow.</p>
+    <h4>Decisions</h4>
+    <p class="p">Everything runs on a Raspberry Pi at the edge, so every model was chosen for latency first and accuracy second. The Android app exposes both a manual mode and a fully autonomous one, because a farmer will not trust a robot they cannot override.</p>
+    <div class="plac"><span>YOLOV11</span><span>U‑NET</span><span>DEEP HOUGH</span><span>6‑DOF IK</span><span>RASPBERRY PI</span><span>JAVA · ANDROID</span></div>
+    <p class="p" style="font-size:14px"><a href="https://github.com/haitomnsg/tomatoBotv2">GitHub</a> &nbsp;·&nbsp; <a href="#">Paper (IJICTDC, 2026‑01)</a></p>
+  </div>
+</section>
+
+<section id="cands">
+  <div class="sec-head"><span class="label">03 · The candidates</span>
+    <div class="intro"><h2>Four faces that fit a white room and a cyan light.</h2>
+    <p>All four are free, variable, and on Google Fonts, so they self‑host cleanly. Each specimen runs display → title → body → small caps so you can judge the whole range at once.</p></div></div>
+  <div class="cands">
+    <div class="cand f-geist">
+      <div class="meta"><span class="tag">Recommended · primary</span><b>Geist</b><span>Precise, quiet, engineered. Reads like Apple's own type without being it. Its mono is a true sibling, so placards and headlines feel cut from one sheet.</span><span>Risk: it is becoming common on developer sites. The world and Alu carry the personality; the type stays out of the way.</span></div>
+      <div class="spec"><div class="big">Machines that think.</div><div class="mid">JeevI, a 12‑DOF quadruped trained with PPO in Isaac Lab.</div><p class="body">RedSoil tracks blood‑bag inventory for a blood bank in Birgunj. Automated expiry alerts cut wastage by about 30% in the first months of use, which is the number I am proudest of.</p><div class="caps"><span>0123456789</span><span>Aa Gg Rr Qq</span><span>→ ± ° %</span><span>नेपाली names kept</span></div></div>
+    </div>
+    <div class="cand f-manrope">
+      <div class="meta"><span class="tag">Alternative · warmer</span><b>Manrope</b><span>Geometric with softened corners. The friendliest of the four and the closest match to Alu's rounded silhouette. Very good at large sizes.</span><span>Risk: at 16 px body it is a little wide, so paragraphs need a narrower measure. Pair with JetBrains Mono.</span></div>
+      <div class="spec"><div class="big">Machines that think.</div><div class="mid">JeevI, a 12‑DOF quadruped trained with PPO in Isaac Lab.</div><p class="body">RedSoil tracks blood‑bag inventory for a blood bank in Birgunj. Automated expiry alerts cut wastage by about 30% in the first months of use, which is the number I am proudest of.</p><div class="caps"><span>0123456789</span><span>Aa Gg Rr Qq</span><span>→ ± ° %</span><span>नेपाली names kept</span></div></div>
+    </div>
+    <div class="cand f-instr">
+      <div class="meta"><span class="tag">Alternative · more character</span><b>Instrument Sans</b><span>A grotesque with a slight editorial edge: tighter, sharper terminals, a bit of attitude in the R and the a. Feels like an exhibition catalogue.</span><span>Risk: the most distinctive, so also the most likely to date. Best if you want the type itself to be part of the identity.</span></div>
+      <div class="spec"><div class="big">Machines that think.</div><div class="mid">JeevI, a 12‑DOF quadruped trained with PPO in Isaac Lab.</div><p class="body">RedSoil tracks blood‑bag inventory for a blood bank in Birgunj. Automated expiry alerts cut wastage by about 30% in the first months of use, which is the number I am proudest of.</p><div class="caps"><span>0123456789</span><span>Aa Gg Rr Qq</span><span>→ ± ° %</span><span>नेपाली names kept</span></div></div>
+    </div>
+    <div class="cand f-jak">
+      <div class="meta"><span class="tag">Alternative · premium‑friendly</span><b>Plus Jakarta Sans</b><span>Between Geist and Manrope: geometric but with more contrast and a taller x‑height. Very readable in long case‑study prose.</span><span>Risk: heavily used by SaaS landing pages, which the README explicitly wants to avoid resembling.</span></div>
+      <div class="spec"><div class="big">Machines that think.</div><div class="mid">JeevI, a 12‑DOF quadruped trained with PPO in Isaac Lab.</div><p class="body">RedSoil tracks blood‑bag inventory for a blood bank in Birgunj. Automated expiry alerts cut wastage by about 30% in the first months of use, which is the number I am proudest of.</p><div class="caps"><span>0123456789</span><span>Aa Gg Rr Qq</span><span>→ ± ° %</span><span>नेपाली names kept</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="mono">
+  <div class="sec-head"><span class="label">04 · The placard voice</span>
+    <div class="intro"><h2>A mono for labels, dates and stacks.</h2>
+    <p>Small, uppercase, tracked out. This is the museum placard next to every artifact, the chapter name in the corner, and the stack line in every case study. It should feel like a machine label, not a code editor.</p></div></div>
+  <div class="mono-row">
+    <div class="m-geist"><span class="label" style="font-family:inherit">Geist Mono · recommended</span><div class="ex"><b>04 · Benches</b> · 2025‑05 · DocLipi<br>DENSENET121 · GEMMA 3 · JAVAFX · FASTAPI<br>27.7172° N, 85.3240° E</div><div class="code">clip: "present"  bone: head  yaw: +38°</div></div>
+    <div class="m-jb"><span class="label" style="font-family:inherit">JetBrains Mono</span><div class="ex"><b>04 · Benches</b> · 2025‑05 · DocLipi<br>DENSENET121 · GEMMA 3 · JAVAFX · FASTAPI<br>27.7172° N, 85.3240° E</div><div class="code">clip: "present"  bone: head  yaw: +38°</div></div>
+    <div class="m-plex"><span class="label" style="font-family:inherit">IBM Plex Mono</span><div class="ex"><b>04 · Benches</b> · 2025‑05 · DocLipi<br>DENSENET121 · GEMMA 3 · JAVAFX · FASTAPI<br>27.7172° N, 85.3240° E</div><div class="code">clip: "present"  bone: head  yaw: +38°</div></div>
+  </div>
+</section>
+
+<section id="verdict" style="border-bottom:0">
+  <div class="sec-head"><span class="label">05 · Recommendation</span>
+    <div class="intro"><h2>Geist Sans + Geist Mono, unless you want warmth.</h2></div></div>
+  <div class="verdict">
+    <div><h3>Why Geist wins</h3><p>Your README asks for Apple‑like restraint and one strong family that handles both 96 px headlines and dense technical text. Geist does exactly that, and its mono means one download, one rhythm, one voice across placards and prose. With a cyan light and a cute robot already in the room, the type should be the calmest thing on screen.</p></div>
+    <div><h3>When to pick Manrope instead</h3><p>If, when you see Alu modelled, the site feels too cool and clinical, switch to Manrope with JetBrains Mono. Its rounded geometry echoes Alu's body and takes the edge off the navy. It is a one‑line token change, so the decision is reversible until M2.</p></div>
+    <div><h3>Rules either way</h3><ul class="plain"><li>Two weights only: 400 and 500 (600 reserved for one word, if ever).</li><li>Tracking −2% above 40 px, +8% on mono labels.</li><li>Navy ink on white, ice‑white ink on navy. Never pure black.</li><li>No gradient text, no all‑caps headlines, no typewriter effect.</li></ul></div>
+  </div>
+</section>
+
+<footer><span class="label">Companion · docs/DESIGN.md §2–3 · Alu Opens a Door</span><span class="label">Decision needed: primary face · mono face</span></footer>
+</div>
+
+<script>
+(function(){
+  var root=document.documentElement;
+  var fonts={geist:'var(--f-geist)',manrope:'var(--f-manrope)',instr:'var(--f-instr)',jak:'var(--f-jak)'};
+  var monos={geist:'var(--m-geist)',jb:'var(--m-jb)',plex:'var(--m-plex)'};
+  function press(group,key){document.querySelectorAll('[data-'+group+']').forEach(function(b){b.setAttribute('aria-pressed',String(b.getAttribute('data-'+group)===key));});}
+  document.querySelectorAll('[data-font]').forEach(function(b){b.addEventListener('click',function(){root.style.setProperty('--sans',fonts[b.dataset.font]);press('font',b.dataset.font);});});
+  document.querySelectorAll('[data-mono]').forEach(function(b){b.addEventListener('click',function(){root.style.setProperty('--mono',monos[b.dataset.mono]);press('mono',b.dataset.mono);});});
+})();
+</script>
