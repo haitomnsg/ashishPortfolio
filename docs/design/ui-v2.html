@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI v2 reference</title>
+<!--
+  Reference sheet for the image prompts (docs/design/image-prompts.md). Three views, picked by the URL hash:
+    #hero   the hero mockup with the new wordmark, top-right controls and Alu's message box
+    #kit    the same pieces in day and night, plus the chapter label and hover placard
+    #logos  the four logo colourways in context
+  Rendered to docs/design/assets/ui-v2-*.png at 1536x1024 with headless Edge.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@500;600&display=block" rel="stylesheet">
+<style>
+  :root {
+    --ink: #03045E; --ink-2: #4A5B7A; --paper: #FFFCF7; --line: #E6DCCB;
+    --cyan: #00B4D8; --accent: #FF9F1C; --accent-ink: #B85109; --glow: #7FE6FF;
+    --night-paper: #0A1070; --night-ink: #F2FBFD; --night-ink-2: #A9C9D6; --night-line: #28338F;
+    --night-accent-ink: #FFB45C;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1536px; height: 1024px; overflow: hidden; background: var(--paper); }
+  body { font-family: "Geist", system-ui, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; }
+  .view { position: absolute; inset: 0; display: none; }
+  .view:target, .view.default { display: block; }
+  .view:target ~ .default { display: none; }
+
+  /* ---------- shared pieces ---------- */
+  .wordmark { display: inline-flex; align-items: center; gap: 12px; font: 500 20px/1 "Geist"; letter-spacing: -.01em; }
+  .wordmark img { width: 38px; height: 38px; display: block; }
+
+  .controls { display: inline-flex; align-items: center; gap: 2px; padding: 5px; border-radius: 999px;
+    background: var(--paper);
+    box-shadow: 0 0 0 1px rgba(3,4,94,.06), 0 12px 28px -10px rgba(30,40,120,.45); }
+  .icon-btn { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; color: var(--ink); }
+  .icon-btn svg { width: 19px; height: 19px; }
+  .divider { width: 1px; height: 20px; background: var(--line); margin: 0 5px 0 3px; }
+  .menu-btn { height: 38px; padding: 0 17px 0 15px; border-radius: 999px; background: var(--ink); color: var(--paper);
+    display: flex; align-items: center; gap: 10px; font: 500 15px/1 "Geist"; }
+  .menu-btn svg { width: 16px; height: 10px; }
+  .controls.night { background: rgba(10,16,112,.72); box-shadow: 0 0 0 1px rgba(127,230,255,.18), 0 12px 28px -10px rgba(0,0,0,.5); }
+  .controls.night .icon-btn { color: var(--night-ink); }
+  .controls.night .divider { background: var(--night-line); }
+  .controls.night .menu-btn { background: var(--night-ink); color: var(--night-paper); }
+
+  .bubble { position: absolute; filter: drop-shadow(0 14px 22px rgba(44,37,71,.24)); }
+  .bubble .card { background: var(--paper); border-radius: 20px; padding: 13px 22px 16px 16px; white-space: nowrap; }
+  .bubble .head { display: flex; align-items: center; gap: 9px; margin-bottom: 7px; }
+  .bubble .badge { width: 30px; height: 22px; display: block; }
+  .bubble .name { font: 600 11px/1 "Geist Mono"; letter-spacing: .16em; color: var(--ink); }
+  .bubble .line { font: 500 19px/1.35 "Geist"; letter-spacing: -.012em; color: var(--ink); padding-left: 2px; }
+  .bubble .line em { font-style: normal; color: var(--accent-ink); }
+  .bubble .tail { position: absolute; top: calc(100% - 1px); width: 34px; height: 24px; display: block; }
+  .bubble.night { filter: none; }
+  .bubble.night .card { background: var(--night-paper); box-shadow: 0 0 0 1px rgba(127,230,255,.35), 0 14px 30px -8px rgba(0,0,20,.55); }
+  .bubble.night .name, .bubble.night .line { color: var(--night-ink); }
+  .bubble.night .line em { color: var(--night-accent-ink); }
+  .bubble.night .tail path { fill: var(--night-paper); }
+
+  .scroll-hint { font: 500 12px/1 "Geist Mono"; letter-spacing: .3em; color: var(--ink-2); }
+
+  .chapter { display: inline-flex; align-items: center; gap: 14px; padding: 10px 16px 10px 12px; border-radius: 999px;
+    background: rgba(255,252,247,.68); backdrop-filter: blur(20px); box-shadow: 0 0 0 1px rgba(3,4,94,.06); }
+  .chapter .ticks { display: flex; gap: 4px; }
+  .chapter .ticks i { width: 14px; height: 3px; border-radius: 2px; background: rgba(3,4,94,.18); }
+  .chapter .ticks i.done { background: var(--ink); }
+  .chapter .ticks i.on { background: var(--cyan); }
+  .chapter .label { font: 500 12px/1 "Geist Mono"; letter-spacing: .14em; color: var(--ink); }
+  .chapter .label b { font-weight: 500; color: var(--ink-2); margin-right: 8px; }
+
+  .placard { display: inline-block; background: var(--paper); border-radius: 12px; padding: 11px 14px 12px;
+    box-shadow: 0 0 0 1px rgba(3,4,94,.06), 0 10px 24px -12px rgba(30,40,120,.45); }
+  .placard .t { font: 600 15px/1.2 "Geist"; letter-spacing: -.01em; }
+  .placard .m { font: 500 11px/1.2 "Geist Mono"; letter-spacing: .12em; color: var(--ink-2); margin-top: 5px; }
+
+  .tag { font: 500 11px/1 "Geist Mono"; letter-spacing: .16em; color: var(--ink-2); text-transform: uppercase; }
+
+  /* ---------- #hero ---------- */
+  #hero { background: url(assets/hero-mockup-v1-clean.webp) 0 0 / 1536px 1024px no-repeat; }
+  #hero .wordmark { position: absolute; left: 44px; top: 29px; }
+  #hero .controls { position: absolute; right: 34px; top: 24px; }
+
+  /* ---------- #kit ---------- */
+  #kit { display: none; grid-template-columns: 1fr 1fr; }
+  #kit:target { display: grid; }
+  #kit .half { position: relative; padding: 56px 64px; }
+  #kit .day { background: linear-gradient(#3FA2DE, #CFEAF7); }
+  #kit .night { background: #111A6E; color: var(--night-ink); }
+  #kit .night .tag { color: var(--night-ink-2); }
+  #kit .row { margin-bottom: 30px; }
+  #kit .row .tag { margin-bottom: 14px; }
+  #kit .bubble { position: relative; display: inline-block; margin-bottom: 26px; }
+  #kit .wordmark.night { color: var(--night-ink); }
+
+  /* ---------- #logos ---------- */
+  #logos { padding: 48px 56px; }
+  #logos h1 { font: 600 30px/1.1 "Geist"; letter-spacing: -.025em; margin-bottom: 6px; }
+  #logos .sub { color: var(--ink-2); font-size: 15px; margin-bottom: 26px; }
+  #logos .grid { display: grid; grid-template-columns: 150px repeat(4, 1fr); gap: 10px; }
+  #logos .cell { height: 128px; border-radius: 16px; display: grid; place-items: center; }
+  #logos .big { height: 190px; }
+  #logos .big img { width: 150px; height: 150px; }
+  #logos .rowlabel { display: flex; align-items: center; }
+  #logos .glare { background: url(assets/hero-mockup-v1-clean.webp) -10px -10px / 1536px 1024px no-repeat; }
+  #logos .sky { background: url(assets/hero-mockup-v1-clean.webp) -980px -20px / 1536px 1024px no-repeat; }
+  #logos .paper { background: var(--paper); box-shadow: 0 0 0 1px var(--line) inset; }
+  #logos .nightbg { background: var(--night-paper); }
+  #logos .nightbg .wordmark { color: var(--night-ink); }
+  #logos .colhead { text-align: center; padding-bottom: 2px; }
+  #logos .colhead .tag { color: var(--ink); }
+  #logos .colhead .tag span { color: var(--ink-2); display: block; margin-top: 6px; letter-spacing: .08em; }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <symbol id="i-sound" viewBox="0 0 24 24"><path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M15.5 9.2a4 4 0 0 1 0 5.6M18.2 6.8a7.4 7.4 0 0 1 0 10.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M19.5 14.6A7.8 7.8 0 0 1 9.4 4.5a7.8 7.8 0 1 0 10.1 10.1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 16 10"><path d="M1 1.5h14M1 8.5h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="alu-badge" viewBox="0 0 30 22"><rect width="30" height="22" rx="7" fill="#03045E"/><ellipse cx="10.4" cy="9.8" rx="3.4" ry="4.4" fill="#7FE6FF"/><ellipse cx="19.6" cy="9.8" rx="3.4" ry="4.4" fill="#7FE6FF"/><path d="M13.2 16.1q1.8 1.5 3.6 0" fill="none" stroke="#7FE6FF" stroke-width="1.3" stroke-linecap="round"/></symbol>
+    <symbol id="tail" viewBox="0 0 34 24"><path d="M0 0H28C27 9 29 17 34 24C21 21 9 13 0 0Z" fill="#FFFCF7"/></symbol>
+  </defs>
+</svg>
+
+<!-- ======================= KIT ======================= -->
+<section class="view" id="kit">
+  <div class="half day">
+    <div class="row"><div class="tag">Wordmark</div>
+      <div class="wordmark"><img src="logo/logo-ocean.svg" alt=""><span>Ashish Gupta</span></div></div>
+    <div class="row"><div class="tag">Top-right controls</div>
+      <div class="controls"><span class="icon-btn"><svg><use href="#i-sound"/></svg></span><span class="icon-btn"><svg><use href="#i-sun"/></svg></span><span class="divider"></span><span class="menu-btn"><svg><use href="#i-menu"/></svg>Menu</span></div></div>
+    <div class="row"><div class="tag">Alu's message box</div>
+      <div class="bubble"><div class="card"><div class="head"><svg class="badge"><use href="#alu-badge"/></svg><span class="name">ALU</span></div><div class="line">This one learned to <em>walk</em> on its own.</div></div><svg class="tail" style="left:150px"><path d="M0 0H28C27 9 29 17 34 24C21 21 9 13 0 0Z" fill="#FFFCF7"/></svg></div></div>
+    <div class="row"><div class="tag">Chapter label</div>
+      <div class="chapter"><span class="ticks"><i class="done"></i><i class="done"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="label"><b>03</b>ROBOTICS</span></div></div>
+    <div class="row"><div class="tag">Hover placard</div>
+      <div class="placard"><div class="t">JeevI</div><div class="m">12-DOF QUADRUPED · 2025</div></div></div>
+  </div>
+  <div class="half night">
+    <div class="row"><div class="tag">Wordmark · night</div>
+      <div class="wordmark night"><img src="logo/logo-ocean.svg" alt=""><span>Ashish Gupta</span></div></div>
+    <div class="row"><div class="tag">Top-right controls · night</div>
+      <div class="controls night"><span class="icon-btn"><svg><use href="#i-sound"/></svg></span><span class="icon-btn"><svg><use href="#i-moon"/></svg></span><span class="divider"></span><span class="menu-btn"><svg><use href="#i-menu"/></svg>Menu</span></div></div>
+    <div class="row"><div class="tag">Alu's message box · night</div>
+      <div class="bubble night"><div class="card"><div class="head"><svg class="badge"><use href="#alu-badge"/></svg><span class="name">ALU</span></div><div class="line">Now you know him. Say <em>hello</em>.</div></div><svg class="tail" style="left:150px"><path d="M0 0H28C27 9 29 17 34 24C21 21 9 13 0 0Z"/></svg></div></div>
+  </div>
+</section>
+
+<!-- ======================= LOGOS ======================= -->
+<section class="view" id="logos">
+  <h1>Logo colourways</h1>
+  <p class="sub">Same mark, traced from the original. The short top bar is the "flag"; it can carry Alu's orange.</p>
+  <div class="grid">
+    <div></div>
+    <div class="colhead"><div class="tag">Ocean<span>blue disc · cream · orange flag</span></div></div>
+    <div class="colhead"><div class="tag">Powered<span>navy disc · cyan · orange flag</span></div></div>
+    <div class="colhead"><div class="tag">Alu<span>cream disc · navy · orange flag</span></div></div>
+    <div class="colhead"><div class="tag">Cyan<span>cyan disc · navy · cream flag</span></div></div>
+
+    <div class="rowlabel"><span class="tag">The mark</span></div>
+    <div class="cell big paper"><img src="logo/logo-ocean.svg" alt=""></div>
+    <div class="cell big paper"><img src="logo/logo-powered.svg" alt=""></div>
+    <div class="cell big paper"><img src="logo/logo-alu.svg" alt=""></div>
+    <div class="cell big paper"><img src="logo/logo-cyan.svg" alt=""></div>
+
+    <div class="rowlabel"><span class="tag">Hero corner<br>(sun glare)</span></div>
+    <div class="cell glare"><div class="wordmark"><img src="logo/logo-ocean.svg" alt=""><span>Ashish Gupta</span></div></div>
+    <div class="cell glare"><div class="wordmark"><img src="logo/logo-powered.svg" alt=""><span>Ashish Gupta</span></div></div>
+    <div class="cell glare"><div class="wordmark"><img src="logo/logo-alu.svg" alt=""><span>Ashish Gupta</span></div></div>
+    <div class="cell glare"><div class="wordmark"><img src="logo/logo-cyan.svg" alt=""><span>Ashish Gupta</span></div></div>
+
+    <div class="rowlabel"><span class="tag">Open sky</span></div>
+    <div class="cell sky"><div class="wordmark"><img src="logo/logo-ocean.svg" alt=""><span>Ashish Gupta</span></div></div>
+    <div class="cell sky"><div class="wordmark"><img src="logo/logo-powered.svg" alt=""><span>Ashish Gupta</span></div></div>
+    <div class="cell sky"><div class="wordmark"><img src="logo/logo-alu.svg" alt=""><span>Ashish Gupta</span></div></div>
+    <div class="cell sky"><div class="wordmark"><img src="logo/logo-cyan.svg" alt=""><span>Ashish Gupta</span></div></div>
+
+    <div class="rowlabel"><span class="tag">Night</span></div>
+    <div class="cell nightbg"><div class="wordmark"><img src="logo/logo-ocean.svg" alt=""><span>Ashish Gupta</span></div></div>
+    <div class="cell nightbg"><div class="wordmark"><img src="logo/logo-powered.svg" alt=""><span>Ashish Gupta</span></div></div>
+    <div class="cell nightbg"><div class="wordmark"><img src="logo/logo-alu.svg" alt=""><span>Ashish Gupta</span></div></div>
+    <div class="cell nightbg"><div class="wordmark"><img src="logo/logo-cyan.svg" alt=""><span>Ashish Gupta</span></div></div>
+  </div>
+</section>
+
+<!-- ======================= HERO (default) ======================= -->
+<section class="view default" id="hero">
+  <div class="wordmark"><img src="logo/logo-ocean.svg" alt=""><span>Ashish Gupta</span></div>
+  <div class="controls"><span class="icon-btn"><svg><use href="#i-sound"/></svg></span><span class="icon-btn"><svg><use href="#i-sun"/></svg></span><span class="divider"></span><span class="menu-btn"><svg><use href="#i-menu"/></svg>Menu</span></div>
+  <div class="bubble" style="left:232px; top:358px">
+    <div class="card"><div class="head"><svg class="badge"><use href="#alu-badge"/></svg><span class="name">ALU</span></div><div class="line">I wasn’t the first thing he <em>built</em>.</div></div>
+    <svg class="tail" style="left:238px"><path d="M0 0H28C27 9 29 17 34 24C21 21 9 13 0 0Z" fill="#FFFCF7"/></svg>
+  </div>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,291 @@
+.hero {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  background: #cfeaf7;
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.canvas canvas {
+  display: block;
+  touch-action: none;
+}
+
+/* Sun glare, top-left, moves against the pointer */
+.glare {
+  position: absolute;
+  left: -18vmax;
+  top: -22vmax;
+  width: 48vmax;
+  height: 48vmax;
+  pointer-events: none;
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 250, 235, 0.9) 0%,
+    rgba(255, 245, 220, 0.4) 16%,
+    rgba(255, 240, 210, 0.12) 38%,
+    rgba(255, 240, 210, 0) 68%
+  );
+  mix-blend-mode: screen;
+  will-change: transform;
+  transition: transform 0.6s var(--ease-ui);
+}
+
+/* ---------------------------------------------------------------- chrome */
+.chrome {
+  position: absolute;
+  inset: 28px 36px auto 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.chrome > * {
+  pointer-events: auto;
+}
+
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font: 500 20px/1 var(--font-sans);
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.wordmark img {
+  width: 38px;
+  height: 38px;
+  display: block;
+}
+
+.controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 5px;
+  border-radius: 999px;
+  background: var(--paper);
+  box-shadow:
+    0 0 0 1px rgba(3, 4, 94, 0.06),
+    0 12px 28px -10px rgba(30, 40, 120, 0.45);
+  transition: background 0.22s var(--ease-ui), box-shadow 0.22s var(--ease-ui);
+}
+
+.controlsNight {
+  background: rgba(10, 16, 112, 0.72);
+  box-shadow:
+    0 0 0 1px rgba(127, 230, 255, 0.18),
+    0 12px 28px -10px rgba(0, 0, 0, 0.5);
+}
+
+.iconBtn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--ink);
+  transition: background 0.16s var(--ease-ui);
+}
+
+.iconBtn:hover {
+  background: rgba(3, 4, 94, 0.06);
+}
+
+.iconBtn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.divider {
+  width: 1px;
+  height: 22px;
+  margin: 0 7px 0 5px;
+  background: rgba(3, 4, 94, 0.12);
+}
+
+.menuBtn {
+  height: 38px;
+  padding: 0 17px 0 15px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: 500 15px/1 var(--font-sans);
+  transition: transform 0.16s var(--ease-ui);
+}
+
+.menuBtn:hover {
+  transform: translateY(-1px);
+}
+
+.menuBtn svg {
+  width: 16px;
+  height: 10px;
+}
+
+.scrollHint {
+  position: absolute;
+  left: 50%;
+  bottom: 44px;
+  transform: translateX(-50%);
+  font: 500 12px/1 var(--font-mono);
+  letter-spacing: 0.3em;
+  color: var(--ink-2);
+  pointer-events: none;
+  animation: hint 3.2s var(--ease-ui) infinite;
+}
+
+@keyframes hint {
+  0%,
+  100% {
+    opacity: 0.75;
+    transform: translate(-50%, 0);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -3px);
+  }
+}
+
+/* ---------------------------------------------------------------- bubble (DOM over the canvas) */
+.anchor {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  will-change: transform;
+  z-index: 5;
+}
+
+.bubble {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: max-content;
+  transform: translate(calc(-100% + 62px), calc(-100% - 26px)) translateY(10px);
+  filter: drop-shadow(0 14px 22px var(--shadow-ink));
+  opacity: 0;
+  transition:
+    opacity 0.22s var(--ease-ui),
+    transform 0.22s var(--ease-ui);
+  pointer-events: none;
+}
+
+.bubbleOpen {
+  opacity: 1;
+  transform: translate(calc(-100% + 62px), calc(-100% - 26px)) translateY(0);
+}
+
+.card {
+  background: var(--paper);
+  border-radius: 20px;
+  padding: 13px 22px 16px 16px;
+  white-space: nowrap;
+}
+
+.bubbleHead {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 7px;
+}
+
+.badge {
+  width: 30px;
+  height: 22px;
+  display: block;
+}
+
+.name {
+  font: 600 11px/1 var(--font-mono);
+  letter-spacing: 0.16em;
+  color: var(--ink);
+}
+
+.line {
+  font: 500 19px/1.35 var(--font-sans);
+  letter-spacing: -0.012em;
+  color: var(--ink);
+  padding-left: 2px;
+}
+
+.line em {
+  font-style: normal;
+  color: var(--accent-ink);
+}
+
+.tail {
+  position: absolute;
+  top: calc(100% - 1px);
+  right: 28px;
+  width: 34px;
+  height: 24px;
+  display: block;
+}
+
+.tail path {
+  fill: var(--paper);
+}
+
+/* ---------------------------------------------------------------- loading veil */
+.veil {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: #fffcf7;
+  transition: opacity 0.6s var(--ease-ui);
+}
+
+.veil img {
+  opacity: 0.9;
+  animation: breathe 1.8s ease-in-out infinite;
+}
+
+.veilGone {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+@media (max-width: 720px) {
+  .chrome {
+    inset: 16px 16px auto 16px;
+  }
+  .wordmark span {
+    display: none;
+  }
+  .menuBtn {
+    padding: 0 14px 0 12px;
+  }
+  .scrollHint {
+    bottom: 28px;
+  }
+  .line {
+    font-size: 16px;
+  }
+  .card {
+    padding: 11px 16px 13px 13px;
+  }
+}

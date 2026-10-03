@@ -68,14 +68,27 @@ Estimates assume evenings/weekends. Each milestone has a definition of done (DoD
 ### M1 — Identity kit (2–3 days)
 - **Done:** direction docs (`docs/design/`), Alu v2 model, turnaround and hero renders (`docs/robot/`).
 - `<Alu />` GLB loader with the rig contract; idle + look behaviours driven by the pointer; flag sway.
-- **Hero prop kit v1** in Blender (`docs/world/`), per DESIGN §8: ground plateau, gate (frame + glass +
-  light-shaft card), pine, grass tuft, rock, cloud, headland-and-crane card. Flat vertex colours,
-  exported to `public/models/world/`.
+- **Done 2026-10-03:** hero prop kit v1 in Blender (`docs/world/hero_build.py` → `hero.blend`,
+  reference render `docs/world/renders/hero_arrival.png`), per DESIGN §8: ground, plateau and steps,
+  cliff and sea, gate (frame + glass + light cards), pines, grass tufts, rocks, clouds, headland and
+  crane. Flat vertex colours, exported to `public/models/world/hero.glb` (about 10k tris, 870 KB
+  before compression).
 - Pick one ChatGPT hero mockup as the composition reference.
 - DoD: a `/lab/alu` dev route shows Alu and the prop kit under the reference lighting (DESIGN §3) in
   day and night, and side-by-side matches the Blender renders.
 
 ### M2 — Arrival + Threshold (4–6 days) — *the hero*
+
+**Status 2026-10-03:** the Arrival screen is built and running (`src/hero/`): Vite + React 19 + R3F
+scaffold, no tone mapping, warm sun + blue-violet sky fill with soft shadows, sky dome, the world GLB
+with grass that sways and bends away from the cursor, pines that sway, a shimmering faceted sea,
+drifting clouds, a breathing gate light with dust motes, and Alu driven procedurally on the rest-pose
+GLB (head follows the pointer, body follows a beat later, breathing, blinks, looping wave held on
+hover, flag and antenna sway, beacon pulse, hop on click). Camera parallax on a damped spring.
+Chrome per `docs/design/ui-v2.html`: wordmark, controls pill, Alu's bubble (DOM, projected from his
+head), "SCROLL TO FOLLOW". Still to do here: the Threshold (scroll → walk through the gate), the
+skip/reduced-motion crossfade, quality tiers, the night version of the scene, and the mobile camera
+path (the FOV is clamped so the gate stays in frame, nothing more yet).
 - Scene root, quality tiers, lighting (warm sun + blue-violet sky fill + rim), faceted ground with
   contact shadows, haze.
 - Gate glass (reflective; transmission on high tier), light shaft (cheap: layered additive planes),

@@ -1,0 +1,36 @@
+/* Interface tokens from docs/DESIGN.md section 3. Day values; night under [data-theme="night"]. */
+:root {
+  --ink: #03045e;
+  --ink-2: #4a5b7a;
+  --paper: #fffcf7;
+  --line: #e6dccb;
+  --glass: rgba(255, 252, 247, 0.64);
+  --cyan: #00b4d8;
+  --link: #0077b6;
+  --focus: #0077b6;
+  --accent: #ff9f1c;
+  --accent-ink: #b85109;
+  --shadow-ink: rgba(44, 37, 71, 0.24);
+
+  --font-sans: 'Geist Variable', 'Geist', 'Inter Tight', system-ui, sans-serif;
+  --font-mono: 'Geist Mono Variable', 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --r-chip: 8px;
+  --r-control: 12px;
+  --r-panel: 16px;
+  --r-sheet: 24px;
+
+  --ease-ui: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+:root[data-theme='night'] {
+  --ink: #f2fbfd;
+  --ink-2: #a9c9d6;
+  --paper: #0a1070;
+  --line: #28338f;
+  --glass: rgba(10, 16, 112, 0.58);
+  --link: #48c6e6;
+  --focus: #00b4d8;
+  --accent-ink: #ffb45c;
+  --shadow-ink: rgba(0, 0, 20, 0.55);
+}

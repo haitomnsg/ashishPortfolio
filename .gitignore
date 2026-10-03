@@ -1,14 +1,4 @@
-# Reference images by other artists: kept local, never published
-inspo/
-
-# Blender auto-backups
+node_modules
+dist
 *.blend1
-*.blend2
-
-# Build and dependencies (for when the site is scaffolded)
-node_modules/
-dist/
-
-# OS files
 .DS_Store
-Thumbs.db
